@@ -19,7 +19,6 @@
  * License:     GPL-2.0+
  * License URI: https//github.com/kadamwhite/asset-loader/tree/master/LICENSE
  */
-// phpcs:disable FunctionFileNameSniff
 
 namespace Asset_Loader;
 
