@@ -1,0 +1,12 @@
+# Travis CI Configuration File
+
+# Tell Travis CI we're using PHP
+language: php
+
+php:
+  - 7.0
+  - 7.2
+  - 7.3
+
+script:
+  - vendor/bin/phpcs --standard=vendor/humanmade/coding-standards .
