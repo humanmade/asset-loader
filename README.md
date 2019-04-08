@@ -4,7 +4,7 @@ This plugin exposes functions which may be used within other WordPress themes or
 
 ## Usage
 
-Full documentation to come. See [react-wp-scripts](https://github.com/humanmade/react-wp-scripts) for directional inspiration about how the methods in [plugin.php] may be used.
+Full documentation to come. See [react-wp-scripts](https://github.com/humanmade/react-wp-scripts) for directional inspiration about how the methods in [plugin.php](plugin.php) may be used.
 
 Assuming a Webpack configuration (such as those created with the presets in [@humanmade/webpack-helpers](https://github.com/humanmade/webpack-helpers)) which sets up a Webpack DevServer instance for an entrypoint named `editor.js`, and assuming the asset manifest and the build, production version of the `editor.js` file would both end up in a `build/` folder within a theme or plugin, you may load the bundle by using the Asset Loader's autoloader method:
 
