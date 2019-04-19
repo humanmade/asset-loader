@@ -15,43 +15,10 @@ function is_development() {
 }
 
 /**
- * Attempt to load a file at the specified path and parse its contents as JSON.
- *
- * @param string $path The path to the JSON file to load.
- * @return array|null;
- */
-function load_asset_file( $path ) {
-	if ( ! file_exists( $path ) ) {
-		return null;
-	}
-	$contents = file_get_contents( $path );
-	if ( empty( $contents ) ) {
-		return null;
-	}
-	return json_decode( $contents, true );
-}
-
-/**
- * Check a directory for a root or build asset manifest file, and attempt to
- * decode and return the asset list JSON if found.
- *
- * @param string $directory Root directory containing `src` and `build` directory.
- * @return array|null;
- */
-function get_assets_list( string $manifest_path ) {
-	$dev_assets = load_asset_file( $manifest_path );
-	if ( ! empty( $dev_assets ) ) {
-		return array_values( $dev_assets );
-	}
-
-	return null;
-}
-
-/**
  * Register some or all scripts and styles defined in a manifest file.
  *
  * @param string $manifest_path Absolute path to a Webpack asset manifest file.
- * @param array $opts {
+ * @param array $options {
  *     @type array    $scripts  Script dependencies.
  *     @type function $filter   Filter function to limit which scripts are enqueued.
  *     @type string   $handle   Style/script handle. (Default is last part of directory name.)
@@ -59,7 +26,7 @@ function get_assets_list( string $manifest_path ) {
  * }
  * @return array|null An array of registered script and style handles, or null.
  */
-function register_assets( $manifest_path, $opts = [] ) {
+function register_assets( $manifest_path, $options = [] ) {
 	$defaults = [
 		'handle'  => basename( plugin_dir_path( $manifest_path ) ),
 		'filter'  => '__return_true',
@@ -67,9 +34,9 @@ function register_assets( $manifest_path, $opts = [] ) {
 		'styles'  => [],
 	];
 
-	$opts = wp_parse_args( $opts, $defaults );
+	$options = wp_parse_args( $options, $defaults );
 
-	$assets = get_assets_list( $manifest_path );
+	$assets = Manifest\get_assets_list( $manifest_path );
 
 	if ( empty( $assets ) ) {
 		// Trust the theme or pluign to handle its own asset loading.
@@ -86,7 +53,7 @@ function register_assets( $manifest_path, $opts = [] ) {
 
 	// There should only be one JS and one CSS file emitted per plugin or theme.
 	foreach ( $assets as $asset_uri ) {
-		if ( ! $opts['filter']( $asset_uri ) ) {
+		if ( ! $options['filter']( $asset_uri ) ) {
 			// Ignore file paths which do not pass the provided filter test.
 			continue;
 		}
@@ -102,34 +69,34 @@ function register_assets( $manifest_path, $opts = [] ) {
 
 		if ( $is_js ) {
 			wp_register_script(
-				$opts['handle'],
+				$options['handle'],
 				$asset_uri,
-				$opts['scripts'],
+				$options['scripts'],
 				filemtime( $manifest_path ),
 				true
 			);
-			$registered['scripts'][] = $opts['handle'];
+			$registered['scripts'][] = $options['handle'];
 		} elseif ( $is_css ) {
 			$has_css = true;
 			wp_register_style(
-				$opts['handle'],
+				$options['handle'],
 				$asset_uri,
-				$opts['styles'],
+				$options['styles'],
 				filemtime( $manifest_path )
 			);
-			$registered['styles'][] = $opts['handle'];
+			$registered['styles'][] = $options['handle'];
 		}
 	}
 
 	// Ensure CSS dependencies are always loaded, even when using CSS-in-JS in
 	// development.
-	if ( ! $has_css && ! empty( $opts['styles'] ) ) {
+	if ( ! $has_css && ! empty( $options['styles'] ) ) {
 		wp_register_style(
-			$opts['handle'],
+			$options['handle'],
 			null,
-			$opts['styles']
+			$options['styles']
 		);
-		$registered['styles'][] = $opts['handle'];
+		$registered['styles'][] = $options['handle'];
 	}
 
 	if ( empty( $registered['scripts'] ) && empty( $registered['styles'] ) ) {
@@ -142,7 +109,7 @@ function register_assets( $manifest_path, $opts = [] ) {
  * Enqueue some or all scripts and styles defined in a manifest file.
  *
  * @param string $manifest_path Absolute path to a Webpack asset manifest file.
- * @param array $opts {
+ * @param array $options {
  *     @type array    $scripts  Script dependencies.
  *     @type function $filter   Filter function to limit which scripts are enqueued.
  *     @type string   $handle   Style/script handle. (Default is last part of directory name.)
@@ -150,8 +117,8 @@ function register_assets( $manifest_path, $opts = [] ) {
  * }
  * @return array|null An array of registered script and style handles, or null.
  */
-function enqueue_assets( $manifest_path, $opts = [] ) {
-	$registered = register_assets( $manifest_path, $opts );
+function enqueue_assets( $manifest_path, $options = [] ) {
+	$registered = register_assets( $manifest_path, $options );
 	if ( empty( $registered ) ) {
 		return false;
 	}
@@ -165,75 +132,6 @@ function enqueue_assets( $manifest_path, $opts = [] ) {
 
 	// Signal that auto-loading occurred.
 	return true;
-}
-
-/**
- * Check if provided path is within the stylesheet directory.
- *
- * @param string $path An absolute file system path.
- * @return boolean
- */
-function is_theme_path( string $path ): bool {
-	return strpos( $path, get_stylesheet_directory() ) === 0;
-}
-
-/**
- * Check if provided path is within the parent theme directory.
- *
- * @param string $path An absolute file system path.
- * @return boolean
- */
-function is_parent_theme_path( string $path ): bool {
-	return strpos( $path, get_template_directory() ) === 0;
-}
-
-function theme_relative_path( string $path ): string {
-	if ( is_theme_path( $path ) ) {
-		return str_replace( trailingslashit( get_stylesheet_directory() ), '', $path );
-	}
-	if ( is_parent_theme_path( $path ) ) {
-		return str_replace( trailingslashit( get_template_directory() ), '', $path );
-	}
-	// This is a bad state. How to indicate?
-	return '';
-	// return plugin_dir_url( $path );
-}
-
-/**
- * Check if provided path is within the stylesheet or template directories.
- *
- * @param string $path An absolute file system path.
- * @return boolean
- */
-function is_plugin_path( string $path ): bool {
-	return ! is_theme_path( $path ) && ! is_parent_theme_path( $path );
-}
-
-/**
- * Take in an absolute file system path that may be part of a theme or plugin
- * directory, and return the URL for that file.
- *
- * @param [type] $path
- * @return string
- */
-function plugin_or_theme_file_uri( string $path ): string {
-	if ( ! is_plugin_path( $path ) ) {
-		return get_theme_file_uri( theme_relative_path( $path ) );
-	}
-
-	return plugin_dir_url( $path ) . basename( $path );
-}
-
-/**
- * Get the filesystem directory path (with trailing slash) for the file passed in.
- *
- * Note: This is a more descriptively-named equivalent to WP's core plugin_dir_path().
- *
- * @param string $file The path to a file on the local file system.
- * @return string The filesystem path of the directory that contains the provided $file.
- */
-function containing_folder( $file ): string {
-	return trailingslashit( dirname( $file ) );
 }
 
 /**
@@ -256,12 +154,12 @@ function containing_folder( $file ): string {
  */
 function autoregister( string $manifest_path, string $target_bundle, array $options = [] ) {
 	// Guess that the manifest resides within the build folder if no build path is provided.
-	$inferred_build_folder = containing_folder( $manifest_path );
+	$inferred_build_folder = Paths\containing_folder( $manifest_path );
 
 	// Set up argument defaults and make some informed guesses about the build path and handle.
 	$defaults = [
 		'build_path' => $inferred_build_folder,
-		'handle'     => basename( containing_folder( $inferred_build_folder ) ),
+		'handle'     => basename( Paths\containing_folder( $inferred_build_folder ) ),
 		'filter'     => '__return_true',
 		'scripts'    => [],
 		'styles'     => [],
@@ -304,7 +202,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 	if ( file_exists( $js_bundle ) ) {
 		wp_register_script(
 			$options['handle'],
-			plugin_or_theme_file_uri( $js_bundle ),
+			Paths\plugin_or_theme_file_uri( $js_bundle ),
 			// get_theme_file_uri( 'build/' . $target_bundle ),
 			$options['scripts'],
 			filemtime( $js_bundle ),
@@ -316,7 +214,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 	if ( file_exists( $css_bundle ) ) {
 		wp_register_style(
 			$options['handle'],
-			plugin_or_theme_file_uri( $css_bundle ),
+			Paths\plugin_or_theme_file_uri( $css_bundle ),
 			$options['styles'],
 			filemtime( $css_bundle )
 		);

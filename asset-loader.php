@@ -19,4 +19,6 @@
  * License:     GPL-2.0+
  * License URI: https//github.com/kadamwhite/asset-loader/tree/master/LICENSE
  */
+require_once( plugin_dir_path( __FILE__ ) . 'inc/manifest/namespace.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/paths/namespace.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'inc/namespace.php' );
