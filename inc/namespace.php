@@ -248,7 +248,7 @@ function autoenqueue( string $manifest_path, string $target_bundle, array $optio
 		$js_bundle = $build_path . $target_bundle;
 		// This assumption breaks down in several instances, such as when using
 		// hashed filenames or when naming files .min.js
-		$css_bundle = $build_path . preg_replace( '/\/js$/', '.css', $target_bundle );
+		$css_bundle = $build_path . preg_replace( '/\.js$/', '.css', $target_bundle );
 
 		// Production mode. Manually enqueue script bundles.
 		if ( file_exists( $js_bundle ) ) {
