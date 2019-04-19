@@ -51,7 +51,7 @@ function get_assets_list( string $manifest_path ) {
  * Register some or all scripts and styles defined in a manifest file.
  *
  * @param string $manifest_path Absolute path to a Webpack asset manifest file.
- * @param array $opts {
+ * @param array $options {
  *     @type array    $scripts  Script dependencies.
  *     @type function $filter   Filter function to limit which scripts are enqueued.
  *     @type string   $handle   Style/script handle. (Default is last part of directory name.)
@@ -59,7 +59,7 @@ function get_assets_list( string $manifest_path ) {
  * }
  * @return array|null An array of registered script and style handles, or null.
  */
-function register_assets( $manifest_path, $opts = [] ) {
+function register_assets( $manifest_path, $options = [] ) {
 	$defaults = [
 		'handle'  => basename( plugin_dir_path( $manifest_path ) ),
 		'filter'  => '__return_true',
@@ -67,7 +67,7 @@ function register_assets( $manifest_path, $opts = [] ) {
 		'styles'  => [],
 	];
 
-	$opts = wp_parse_args( $opts, $defaults );
+	$options = wp_parse_args( $options, $defaults );
 
 	$assets = get_assets_list( $manifest_path );
 
@@ -86,7 +86,7 @@ function register_assets( $manifest_path, $opts = [] ) {
 
 	// There should only be one JS and one CSS file emitted per plugin or theme.
 	foreach ( $assets as $asset_uri ) {
-		if ( ! $opts['filter']( $asset_uri ) ) {
+		if ( ! $options['filter']( $asset_uri ) ) {
 			// Ignore file paths which do not pass the provided filter test.
 			continue;
 		}
@@ -102,34 +102,34 @@ function register_assets( $manifest_path, $opts = [] ) {
 
 		if ( $is_js ) {
 			wp_register_script(
-				$opts['handle'],
+				$options['handle'],
 				$asset_uri,
-				$opts['scripts'],
+				$options['scripts'],
 				filemtime( $manifest_path ),
 				true
 			);
-			$registered['scripts'][] = $opts['handle'];
+			$registered['scripts'][] = $options['handle'];
 		} elseif ( $is_css ) {
 			$has_css = true;
 			wp_register_style(
-				$opts['handle'],
+				$options['handle'],
 				$asset_uri,
-				$opts['styles'],
+				$options['styles'],
 				filemtime( $manifest_path )
 			);
-			$registered['styles'][] = $opts['handle'];
+			$registered['styles'][] = $options['handle'];
 		}
 	}
 
 	// Ensure CSS dependencies are always loaded, even when using CSS-in-JS in
 	// development.
-	if ( ! $has_css && ! empty( $opts['styles'] ) ) {
+	if ( ! $has_css && ! empty( $options['styles'] ) ) {
 		wp_register_style(
-			$opts['handle'],
+			$options['handle'],
 			null,
-			$opts['styles']
+			$options['styles']
 		);
-		$registered['styles'][] = $opts['handle'];
+		$registered['styles'][] = $options['handle'];
 	}
 
 	if ( empty( $registered['scripts'] ) && empty( $registered['styles'] ) ) {
@@ -142,7 +142,7 @@ function register_assets( $manifest_path, $opts = [] ) {
  * Enqueue some or all scripts and styles defined in a manifest file.
  *
  * @param string $manifest_path Absolute path to a Webpack asset manifest file.
- * @param array $opts {
+ * @param array $options {
  *     @type array    $scripts  Script dependencies.
  *     @type function $filter   Filter function to limit which scripts are enqueued.
  *     @type string   $handle   Style/script handle. (Default is last part of directory name.)
@@ -150,8 +150,8 @@ function register_assets( $manifest_path, $opts = [] ) {
  * }
  * @return array|null An array of registered script and style handles, or null.
  */
-function enqueue_assets( $manifest_path, $opts = [] ) {
-	$registered = register_assets( $manifest_path, $opts );
+function enqueue_assets( $manifest_path, $options = [] ) {
+	$registered = register_assets( $manifest_path, $options );
 	if ( empty( $registered ) ) {
 		return false;
 	}
