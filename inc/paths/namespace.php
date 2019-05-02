@@ -55,7 +55,7 @@ function is_plugin_path( string $path ): bool {
  * Take in an absolute file system path that may be part of a theme or plugin
  * directory, and return the URL for that file.
  *
- * @param [type] $path
+ * @param string $path Absolute file path..
  * @return string
  */
 function plugin_or_theme_file_uri( string $path ): string {
@@ -63,7 +63,7 @@ function plugin_or_theme_file_uri( string $path ): string {
 		return get_theme_file_uri( theme_relative_path( $path ) );
 	}
 
-	return plugin_dir_url( $path ) . basename( $path );
+	return content_url( str_replace( WP_CONTENT_DIR, '', $path ) );
 }
 
 /**
