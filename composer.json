@@ -1,4 +1,8 @@
 {
+    "name": "kadamwhite/asset-loader",
+    "description": "Utilities to seamlessly consume Webpack-bundled assets in WordPress themes & plugins.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
     "require-dev": {
         "humanmade/coding-standards": "^0.6.0"
     }
