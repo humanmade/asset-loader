@@ -19,6 +19,19 @@
  * License:     GPL-2.0+
  * License URI: https//github.com/humanmade/asset-loader/tree/master/LICENSE
  */
-require_once( plugin_dir_path( __FILE__ ) . 'inc/manifest/namespace.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'inc/paths/namespace.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'inc/namespace.php' );
+
+namespace Asset_Loader;
+
+/**
+ * Prevent Fatal errors in case multiple individual plugins rely on this package and thus ship it, multiple times.
+ * PHP doesn't allow existing functions to be redefined, so we use a namespace constant as "include guard".
+ */
+if ( defined( __NAMESPACE__ . '\\LOADED' ) ) {
+	return;
+}
+
+const LOADED = true;
+
+require plugin_dir_path( __FILE__ ) . 'inc/manifest/namespace.php';
+require plugin_dir_path( __FILE__ ) . 'inc/paths/namespace.php';
+require plugin_dir_path( __FILE__ ) . 'inc/namespace.php';
