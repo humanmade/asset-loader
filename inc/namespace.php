@@ -43,6 +43,9 @@ function register_assets( $manifest_path, $options = [] ) {
 		return false;
 	}
 
+	// Generate a hash of the manifest, for script versioning.
+	$manifest_hash = md5_file( $manifest_path );
+
 	// Keep track of whether a CSS file has been encountered.
 	$has_css = false;
 
@@ -72,7 +75,7 @@ function register_assets( $manifest_path, $options = [] ) {
 				$options['handle'],
 				$asset_uri,
 				$options['scripts'],
-				filemtime( $manifest_path ),
+				$manifest_hash,
 				true
 			);
 			$registered['scripts'][] = $options['handle'];
@@ -82,7 +85,7 @@ function register_assets( $manifest_path, $options = [] ) {
 				$options['handle'],
 				$asset_uri,
 				$options['styles'],
-				filemtime( $manifest_path )
+				$manifest_hash
 			);
 			$registered['styles'][] = $options['handle'];
 		}
@@ -205,7 +208,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 			Paths\plugin_or_theme_file_uri( $js_bundle ),
 			// get_theme_file_uri( 'build/' . $target_bundle ),
 			$options['scripts'],
-			filemtime( $js_bundle ),
+			md5_file( $js_bundle ),
 			true
 		);
 		$registered['scripts'][] = $options['handle'];
@@ -216,7 +219,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 			$options['handle'],
 			Paths\plugin_or_theme_file_uri( $css_bundle ),
 			$options['styles'],
-			filemtime( $css_bundle )
+			md5_file( $css_bundle )
 		);
 		$registered['styles'][] = $options['handle'];
 	}
@@ -224,6 +227,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 	if ( empty( $registered['scripts'] ) && empty( $registered['styles'] ) ) {
 		return null;
 	}
+
 	return $registered;
 }
 
