@@ -5,5 +5,8 @@
     "license": "GPL-2.0-or-later",
     "require-dev": {
         "humanmade/coding-standards": "^0.6.0"
+    },
+    "scripts": {
+        "lint": "phpcs --standard=vendor/humanmade/coding-standards ."
     }
 }

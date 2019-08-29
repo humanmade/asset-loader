@@ -38,6 +38,16 @@ function enqueue_block_editor_assets() {
 }
 ```
 
+## Local Development
+
+Before submitting a pull request, ensure that your PHP code passes our [coding standards](https://github.com/humanmade/coding-standards) by running [PHPCS](https://pear.php.net/package/PHP_CodeSniffer):
+
+```sh
+composer run-script lint
+```
+
+If the above command does not work, ensure you have [Composer](https://getcomposer.org/) installed on your machine & run `composer install` from the project root.
+
 ## License
 
 This plugin is free software. You can redistribute it and/or modify it under the terms of the [GNU General Public License](LICENSE) as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
