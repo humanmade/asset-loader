@@ -66,7 +66,7 @@ function plugin_or_theme_file_uri( string $path ): string {
 	return apply_filters(
 		'asset_loader_plugin_or_theme_file_uri',
 		content_url( str_replace( WP_CONTENT_DIR, '', $path ) ),
-		$path,
+		$path
 	);
 }
 
