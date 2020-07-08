@@ -6,12 +6,19 @@
 namespace Asset_Loader\Manifest;
 
 /**
- * Attempt to load a file at the specified path and parse its contents as JSON.
+ * Attempt to load a manifest at the specified path and parse its contents as JSON.
  *
  * @param string $path The path to the JSON file to load.
  * @return array|null;
  */
-function load_asset_file( $path ) {
+function load_asset_manifest( $path ) {
+	// Avoid repeatedly opening & decoding the same file.
+	static $manifests = [];
+
+	if ( isset( $manifests[ $path ] ) ) {
+		return $manifests[ $path ];
+	}
+
 	if ( ! file_exists( $path ) ) {
 		return null;
 	}
@@ -19,7 +26,10 @@ function load_asset_file( $path ) {
 	if ( empty( $contents ) ) {
 		return null;
 	}
-	return json_decode( $contents, true );
+
+	$manifests[ $path ] = json_decode( $contents, true );
+
+	return $manifests[ $path ];
 }
 
 /**
@@ -30,7 +40,7 @@ function load_asset_file( $path ) {
  * @return array|null;
  */
 function get_assets_list( string $manifest_path ) {
-	$dev_assets = load_asset_file( $manifest_path );
+	$dev_assets = load_asset_manifest( $manifest_path );
 	if ( ! empty( $dev_assets ) ) {
 		maybe_setup_ssl_cert_error_handling( $dev_assets );
 		return array_values( $dev_assets );
