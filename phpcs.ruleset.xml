@@ -3,4 +3,14 @@
     <rule ref="vendor/humanmade/coding-standards">
         <exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop" />
     </rule>
+
+    <rule ref="Squiz.Commenting.FunctionComment.Missing">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.ClassComment.Missing">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.MissingParamTag">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
 </ruleset>

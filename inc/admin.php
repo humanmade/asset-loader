@@ -11,7 +11,7 @@ namespace Asset_Loader\Admin;
  * @return string Regular expression pattern matching https://localhost.
  */
 function get_localhost_pattern() : string {
-    return '#https://(localhost|127.0.0.1)#';
+	return '#https://(localhost|127.0.0.1)#';
 }
 
 /**
@@ -23,29 +23,28 @@ function get_localhost_pattern() : string {
  * @return void
  */
 function maybe_setup_ssl_cert_error_handling( $script_uri ) : void {
-    static $error_handling_enabled = false;
-    if ( $error_handling_enabled ) {
-        // We have already set up the error handling script; no further action needed.
-        return;
-    }
+	static $error_handling_enabled = false;
+	if ( $error_handling_enabled ) {
+		// We have already set up the error handling script; no further action needed.
+		return;
+	}
 
-    // Do nothing in a non-admin context.
-    if ( ! is_admin() ) {
-        return;
-    }
+	// Do nothing in a non-admin context.
+	if ( ! is_admin() ) {
+		return;
+	}
 
-    if ( ! preg_match( get_localhost_pattern(), $script_uri ) ) {
-        // Not an HTTPS localhost script.
-        return;
-    }
+	if ( ! preg_match( get_localhost_pattern(), $script_uri ) ) {
+		// Not an HTTPS localhost script.
+		return;
+	}
 
-    // Toggle the static variable so we only add actions & filters once.
-    $error_handling_enabled = true;
+	// Toggle the static variable so we only add actions & filters once.
+	$error_handling_enabled = true;
 
-    add_action( 'admin_head', __NAMESPACE__ . '\\render_localhost_error_detection_script', 5 );
-    add_filter( 'script_loader_tag', __NAMESPACE__ . '\\add_onerror_to_scripts', 10, 3 );
+	add_action( 'admin_head', __NAMESPACE__ . '\\render_localhost_error_detection_script', 5 );
+	add_filter( 'script_loader_tag', __NAMESPACE__ . '\\add_onerror_to_localhost_scripts', 10, 3 );
 }
-
 
 /**
  * Inject an onerror attribute into the rendered script tag for any script
@@ -57,7 +56,7 @@ function maybe_setup_ssl_cert_error_handling( $script_uri ) : void {
  * @return string The script tag HTML, conditionally transformed.
  */
 function add_onerror_to_localhost_scripts( string $tag, string $handle, string $src ) : string {
-	if ( ! is_admin() || ! preg_match( '#https://localhost#', $src ) ) {
+	if ( ! is_admin() || ! preg_match( get_localhost_pattern(), $src ) ) {
 		return $tag;
 	}
 	return preg_replace(
@@ -77,7 +76,7 @@ function add_onerror_to_localhost_scripts( string $tag, string $handle, string $
  * @return void
  */
 function render_localhost_error_detection_script() : void {
-    ?>
+	?>
 <script>
 ( function() {
 	var scriptsWithErrors = [];
@@ -146,5 +145,5 @@ function render_localhost_error_detection_script() : void {
 	} );
 } )();
 </script>
-    <?php
+	<?php
 }
