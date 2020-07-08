@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<ruleset>
+    <rule ref="vendor/humanmade/coding-standards">
+        <exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop" />
+    </rule>
+</ruleset>

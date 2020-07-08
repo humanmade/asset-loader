@@ -2,6 +2,7 @@
 /**
  * Define utility functions for evaluating and manipulating file system paths & uris.
  */
+
 namespace Asset_Loader\Paths;
 
 /**

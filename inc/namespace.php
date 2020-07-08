@@ -18,11 +18,11 @@ function is_development() {
  * Register some or all scripts and styles defined in a manifest file.
  *
  * @param string $manifest_path Absolute path to a Webpack asset manifest file.
- * @param array $options {
- *     @type array    $scripts  Script dependencies.
- *     @type function $filter   Filter function to limit which scripts are enqueued.
- *     @type string   $handle   Style/script handle. (Default is last part of directory name.)
- *     @type array    $styles   Style dependencies.
+ * @param array  $options {
+ *     @type array    $scripts Script dependencies.
+ *     @type function $filter  Filter function to limit which scripts are enqueued.
+ *     @type string   $handle  Style/script handle. (Default is last part of directory name.)
+ *     @type array    $styles  Style dependencies.
  * }
  * @return array|null An array of registered script and style handles, or null.
  */
@@ -112,11 +112,11 @@ function register_assets( $manifest_path, $options = [] ) {
  * Enqueue some or all scripts and styles defined in a manifest file.
  *
  * @param string $manifest_path Absolute path to a Webpack asset manifest file.
- * @param array $options {
- *     @type array    $scripts  Script dependencies.
- *     @type function $filter   Filter function to limit which scripts are enqueued.
- *     @type string   $handle   Style/script handle. (Default is last part of directory name.)
- *     @type array    $styles   Style dependencies.
+ * @param array  $options {
+ *     @type array    $scripts Script dependencies.
+ *     @type function $filter  Filter function to limit which scripts are enqueued.
+ *     @type string   $handle  Style/script handle. (Default is last part of directory name.)
+ *     @type array    $styles  Style dependencies.
  * }
  * @return array|null An array of registered script and style handles, or null.
  */
@@ -143,15 +143,15 @@ function enqueue_assets( $manifest_path, $options = [] ) {
  *
  * The manifest, build_path, and target_bundle options are required.
  *
- * @param string   $manifest_path Absolute file system path to Webpack asset manifest file.
- * @param function $target_bundle The expected string filename of the bundle to load from the manifest.
- * @param array    $options {
- *     @type string   $build_path    Absolute file system path to the static asset output folder.
- *                                   Optional; defaults to the manifest file's parent folder.
- *     @type string   $handle        The handle to use when enqueuing the style/script bundle.
- *                                   Optional; defaults to the basename of the build folder's parent folder.
- *     @type array    $scripts       Script dependencies. Optional.
- *     @type array    $styles        Style dependencies. Optional.
+ * @param string $manifest_path Absolute file system path to Webpack asset manifest file.
+ * @param string $target_bundle The expected string filename of the bundle to load from the manifest.
+ * @param array  $options {
+ *     @type string $build_path Absolute file system path to the static asset output folder.
+ *                              Optional; defaults to the manifest file's parent folder.
+ *     @type string $handle     The handle to use when enqueuing the style/script bundle.
+ *                              Optional; defaults to the basename of the build folder's parent folder.
+ *     @type array  $scripts    Script dependencies. Optional.
+ *     @type array  $styles     Style dependencies. Optional.
  * }
  * @return array|null An array of registered script and style handles, or null.
  */
@@ -198,7 +198,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 
 	$js_bundle = $build_path . $target_bundle;
 	// These file naming assumption break down in several instances, such as when
-	// using hashed filenames or when naming files .min.js
+	// using hashed filenames or when naming files .min.js.
 	$css_bundle = $build_path . preg_replace( '/\.js$/', '.css', $target_bundle );
 
 	// Production mode. Manually register script bundles.
@@ -206,7 +206,6 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 		wp_register_script(
 			$options['handle'],
 			Paths\plugin_or_theme_file_uri( $js_bundle ),
-			// get_theme_file_uri( 'build/' . $target_bundle ),
 			$options['scripts'],
 			md5_file( $js_bundle ),
 			true
@@ -237,15 +236,15 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
  *
  * The manifest, build_path, and target_bundle options are required.
  *
- * @param string   $manifest_path Absolute file system path to Webpack asset manifest file.
- * @param function $target_bundle The expected string filename of the bundle to load from the manifest.
- * @param array    $options {
- *     @type string   $build_path    Absolute file system path to the static asset output folder.
- *                                   Optional; defaults to the manifest file's parent folder.
- *     @type string   $handle        The handle to use when enqueuing the style/script bundle.
- *                                   Optional; defaults to the basename of the build folder's parent folder.
- *     @type array    $scripts       Script dependencies. Optional.
- *     @type array    $styles        Style dependencies. Optional.
+ * @param string $manifest_path Absolute file system path to Webpack asset manifest file.
+ * @param string $target_bundle The expected string filename of the bundle to load from the manifest.
+ * @param array  $options {
+ *     @type string $build_path Absolute file system path to the static asset output folder.
+ *                              Optional; defaults to the manifest file's parent folder.
+ *     @type string $handle     The handle to use when enqueuing the style/script bundle.
+ *                              Optional; defaults to the basename of the build folder's parent folder.
+ *     @type array  $scripts    Script dependencies. Optional.
+ *     @type array  $styles     Style dependencies. Optional.
  * }
  * @return void
  */

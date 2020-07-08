@@ -2,6 +2,7 @@
 /**
  * Define utility functions for loading & parsing an asset manifest file.
  */
+
 namespace Asset_Loader\Manifest;
 
 /**
@@ -25,7 +26,7 @@ function load_asset_file( $path ) {
  * Check a directory for a root or build asset manifest file, and attempt to
  * decode and return the asset list JSON if found.
  *
- * @param string $directory Root directory containing `src` and `build` directory.
+ * @param string $manifest_path Absolute file system path to a JSON asset manifest.
  * @return array|null;
  */
 function get_assets_list( string $manifest_path ) {

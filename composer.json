@@ -10,6 +10,6 @@
         "humanmade/coding-standards": "dev-master"
     },
     "scripts": {
-        "lint": "phpcs --standard=vendor/humanmade/coding-standards ."
+        "lint": "phpcs --standard=phpcs.ruleset.xml ."
     }
 }
