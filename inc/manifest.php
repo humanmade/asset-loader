@@ -50,6 +50,24 @@ function get_assets_list( string $manifest_path ) {
 }
 
 /**
+ * Attempt to extract a specific value from an asset manifest file.
+ *
+ * @param string $manifest_path File system path for an asset manifest JSON file.
+ * @param string $asset        Asset to retrieve within the specified manifest.
+ *
+ * @return string|null
+ */
+function get_manifest_resource( string $manifest_path, string $asset ) : ?string {
+	$dev_assets = load_asset_manifest( $manifest_path );
+
+	if ( ! isset( $dev_assets[ $asset ] ) ) {
+		return null;
+	}
+
+	return $dev_assets[ $asset ];
+}
+
+/**
  * Check to see if the manifest contains HTTPS localhost URLs, and set up error
  * detection to display a notice reminding the developer to accept the dev
  * server's SSL certificate if any of those HTTPS scripts fail to load.
