@@ -299,12 +299,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/humanmade/coding-standards.git",
-                "reference": "a5e066c4e67a823e3d30c8df332b5de846af73bb"
+                "reference": "94d9874e417056c76caaecea7ca2566f44724a0d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/humanmade/coding-standards/zipball/a5e066c4e67a823e3d30c8df332b5de846af73bb",
-                "reference": "a5e066c4e67a823e3d30c8df332b5de846af73bb",
+                "url": "https://api.github.com/repos/humanmade/coding-standards/zipball/94d9874e417056c76caaecea7ca2566f44724a0d",
+                "reference": "94d9874e417056c76caaecea7ca2566f44724a0d",
                 "shasum": ""
             },
             "require": {
@@ -325,7 +325,7 @@
                 "GPL-2.0-or-later"
             ],
             "description": "Human Made coding standards",
-            "time": "2020-07-03T14:12:14+00:00"
+            "time": "2020-07-08T19:36:21+00:00"
         },
         {
             "name": "phpcompatibility/php-compatibility",
