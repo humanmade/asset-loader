@@ -10,4 +10,4 @@ php:
 install: composer install
 
 script:
-  - vendor/bin/phpcs --standard=vendor/humanmade/coding-standards .
+  - composer run lint
