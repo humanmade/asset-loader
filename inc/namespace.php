@@ -286,6 +286,11 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 		$asset_uri = $target_asset;
 	}
 
+	// Use the asset URI as the asset handle if no handle was provided.
+	if ( empty( $options['handle'] ) ) {
+		$options['handle'] = $asset_uri;
+	}
+
 	// Reconcile static asset build paths relative to the manifest's directory.
 	if ( strpos( $asset_uri, '//' ) === false ) {
 		$asset_uri = Paths\get_file_uri( $manifest_folder . $asset_uri );
