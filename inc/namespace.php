@@ -320,6 +320,7 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 			$asset_uri
 		);
 	} else {
+		Admin\maybe_setup_ssl_cert_error_handling( $asset_uri );
 		wp_register_script(
 			$options['handle'],
 			$asset_uri,
