@@ -18,10 +18,6 @@ class Test_Paths extends Asset_Loader_Test_Case {
 			} );
 	}
 
-	public function tearDown(): void {
-		parent::tearDown();
-	}
-
 	/**
 	 * Test get_file_uri(), which is the primary function declared in
 	 * the Paths namespace that is intended to be used elsewhere.
@@ -53,10 +49,26 @@ class Test_Paths extends Asset_Loader_Test_Case {
 	 */
 	public function provide_get_file_uri_cases() : array {
 		return [
-			[ '/root/content/themes/child/child-file.js', 'https://example.com/content/theme/child-file.js', 'Child theme file should return theme resource URI' ],
-			[ '/root/content/themes/parent/parent-file.js', 'https://example.com/content/theme/parent-file.js', 'Parent theme file should return theme resource URI' ],
-			[ '/root/content/plugins/some-plugin/bundle.js', 'https://example.com/content/plugins/some-plugin/bundle.js', 'Plugin file path should return plugin resource URI' ],
-			[ '/root/content/mu-plugins/gotta-use-it/bundle.min.js', 'https://example.com/content/mu-plugins/gotta-use-it/bundle.min.js', 'Must-use plugin file path should return mu-plugin resource URI' ],
+			'theme resource' => [
+				'/root/content/themes/child/child-file.js',
+				'https://example.com/content/theme/child-file.js',
+				'Child theme file should return theme resource URI',
+			],
+			'parent theme resource' => [
+				'/root/content/themes/parent/parent-file.js',
+				'https://example.com/content/theme/parent-file.js',
+				'Parent theme file should return theme resource URI',
+			],
+			'plugin resource' => [
+				'/root/content/plugins/some-plugin/bundle.js',
+				'https://example.com/content/plugins/some-plugin/bundle.js',
+				'Plugin file path should return plugin resource URI',
+			],
+			'mu-plugin resource' => [
+				'/root/content/mu-plugins/gotta-use-it/bundle.min.js',
+				'https://example.com/content/mu-plugins/gotta-use-it/bundle.min.js',
+				'Must-use plugin file path should return mu-plugin resource URI',
+			],
 		];
 	}
 }

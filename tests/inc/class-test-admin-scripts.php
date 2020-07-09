@@ -31,12 +31,37 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	 */
 	public function provide_maybe_setup_ssl_cert_error_handling_cases() : array {
 		return [
-			[ false, 'https://localhost:9000/some-script.js', false, 'Should have no effect outside of the admin' ],
-			[ true, 'https://some-non-local-domain.com/some-script.js', false, 'Should have no effect for non-local scripts' ],
-			[ true, 'http://localhost:9000/some-script.js', false, 'Should have no effect for non-HTTPS scripts' ],
+			'non-admin script' => [
+				false,
+				'https://localhost:9000/some-script.js',
+				false,
+				'Should have no effect outside of the admin',
+			],
+			'non-local script' => [
+				true,
+				'https://some-non-local-domain.com/some-script.js',
+				false,
+				'Should have no effect for non-local scripts',
+			],
+			'non-HTTPS script' => [
+				true,
+				'http://localhost:9000/some-script.js',
+				false,
+				'Should have no effect for non-HTTPS scripts',
+			],
 			// These next two cases intentionally use the same script.
-			[ true, 'https://localhost:9000/some-script.js', true, 'Should set up error handlers for https://localhost scripts' ],
-			[ true, 'https://localhost:9000/some-script.js', false, 'Should only bind action hooks the first time a matching script is found' ],
+			'first valid script binds actions' => [
+				true,
+				'https://localhost:9000/some-script.js',
+				true,
+				'Should set up error handlers for https://localhost scripts',
+			],
+			'second valid script does not rebind actions' => [
+				true,
+				'https://localhost:9000/some-script.js',
+				false,
+				'Should only bind action hooks the first time a matching script is found',
+			],
 		];
 	}
 
@@ -57,9 +82,27 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	 */
 	public function provide_positive_script_filter_cases() : array {
 		return [
-			[ true, '<script />', 'https://localhost:8000/script.js', '<script onerror="maybeSSLError && maybeSSLError( this );" />', 'https://localhost:8000 script tag should receive onerror handler' ],
-			[ true, '<script />', 'https://localhost:9090/script.js', '<script onerror="maybeSSLError && maybeSSLError( this );" />', 'https://localhost:9090 script tag should receive onerror handler' ],
-			[ true, '<script />', 'https://127.0.0.1:8000/script.js', '<script onerror="maybeSSLError && maybeSSLError( this );" />', 'https://127.0.0.1:8000 script tag should receive onerror handler' ],
+			'filter localhost URL' => [
+				true,
+				'<script />',
+				'https://localhost:8000/script.js',
+				'<script onerror="maybeSSLError && maybeSSLError( this );" />',
+				'https://localhost:8000 script tag should receive onerror handler',
+			],
+			'filter localhost URL on different port' => [
+				true,
+				'<script />',
+				'https://localhost:9090/script.js',
+				'<script onerror="maybeSSLError && maybeSSLError( this );" />',
+				'https://localhost:9090 script tag should receive onerror handler',
+			],
+			'filter URL using home IP' => [
+				true,
+				'<script />',
+				'https://127.0.0.1:8000/script.js',
+				'<script onerror="maybeSSLError && maybeSSLError( this );" />',
+				'https://127.0.0.1:8000 script tag should receive onerror handler',
+			],
 		];
 	}
 
@@ -68,9 +111,27 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	 */
 	public function provide_negative_script_filter_cases() : array {
 		return [
-			[ false, '<script />', 'https://localhost:8000/script.js', '<script />', 'script tag should not be filtered if is_admin() is false' ],
-			[ true, '<script />', 'http://localhost:8000/script.js', '<script />', 'script tag should not be filtered if script URI is not HTTPS' ],
-			[ true, '<script />', 'https://example.com/script.js', '<script />', 'script tag should not be filtered if script URI host is not localhost' ],
+			'no filtering outside admin' => [
+				false,
+				'<script />',
+				'https://localhost:8000/script.js',
+				'<script />',
+				'script tag should not be filtered if is_admin() is false',
+			],
+			'no filtering of non-HTTPS URIs' => [
+				true,
+				'<script />',
+				'http://localhost:8000/script.js',
+				'<script />',
+				'script tag should not be filtered if script URI is not HTTPS',
+			],
+			'no filtering of non-localhost URIs' => [
+				true,
+				'<script />',
+				'https://example.com/script.js',
+				'<script />',
+				'script tag should not be filtered if script URI host is not localhost',
+			],
 		];
 	}
 }

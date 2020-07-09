@@ -24,9 +24,21 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 */
 	public function provide_is_css_cases() {
 		return [
-			[ 'not-a-css-file.js', false, 'Should return false for JS assets' ],
-			[ 'css-file.css', true, 'Should return true for CSS assets' ],
-			[ 'css-file.css?with-query=params', true, 'Should return true for CSS assets with query parameters' ],
+			'return false for js assets' => [
+				'not-a-css-file.js',
+				false,
+				'Should return false for JS assets',
+			],
+			'return true for css assets' => [
+				'css-file.css',
+				true,
+				'Should return true for CSS assets',
+			],
+			'return true for css assets with query strings' => [
+				'css-file.css?with-query=params',
+				true,
+				'Should return true for CSS assets with query parameters',
+			],
 		];
 	}
 }
