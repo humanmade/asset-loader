@@ -156,6 +156,14 @@ function enqueue_assets( $manifest_path, $options = [] ) {
  * @return array|null An array of registered script and style handles, or null.
  */
 function autoregister( string $manifest_path, string $target_bundle, array $options = [] ) {
+	if ( function_exists( '_doing_it_wrong' ) ) {
+		_doing_it_wrong(
+			'autoregister',
+			'autoregister() is deprecated and will be removed soon. Use register_asset() instead.',
+			'0.4.0'
+		);
+	}
+
 	// Guess that the manifest resides within the build folder if no build path is provided.
 	$inferred_build_folder = Paths\containing_folder( $manifest_path );
 
@@ -249,6 +257,14 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
  * @return void
  */
 function autoenqueue( string $manifest_path, string $target_bundle, array $options = [] ) {
+	if ( function_exists( '_doing_it_wrong' ) ) {
+		_doing_it_wrong(
+			'autoenqueue',
+			'autoenqueue() is deprecated and will be removed soon. Use enqueue_asset() instead.',
+			'0.4.0'
+		);
+	}
+
 	$registered = autoregister( $manifest_path, $target_bundle, $options );
 
 	if ( empty( $registered ) ) {
