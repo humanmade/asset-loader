@@ -59,7 +59,7 @@ function is_plugin_path( string $path ): bool {
  * @param string $path Absolute file path.
  * @return string
  */
-function plugin_or_theme_file_uri( string $path ): string {
+function get_file_uri( string $path ): string {
 	if ( ! is_plugin_path( $path ) ) {
 		return get_theme_file_uri( theme_relative_path( $path ) );
 	}
