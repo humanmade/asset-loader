@@ -4,6 +4,7 @@
 		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop" />
 	</rule>
 
+	<!-- Turn off rules which feel superfluous or distracting within test files. -->
 	<rule ref="Squiz.Commenting.FunctionComment.Missing">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
@@ -12,5 +13,8 @@
 	</rule>
 	<rule ref="Squiz.Commenting.FunctionComment.MissingParamTag">
 		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+		<exclude-pattern>tests/bootstrap.php</exclude-pattern>
 	</rule>
 </ruleset>
