@@ -10,7 +10,7 @@ use WP_Mock;
 
 class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	/**
-	 * Test the method used to conditionally set up localhost script load error warning banner.
+	 * Test maybe_set_ssl_cert_error_handling().
 	 *
 	 * @dataProvider provide_maybe_setup_ssl_cert_error_handling_cases
 	 */
@@ -27,9 +27,7 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	}
 
 	/**
-	 * Data provider for method that conditionally sets up script load error handler code.
-	 *
-	 * @return array
+	 * Test cases for maybe_set_ssl_cert_error_handling().
 	 */
 	public function provide_maybe_setup_ssl_cert_error_handling_cases() : array {
 		return [
@@ -55,7 +53,7 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	}
 
 	/**
-	 * Data provider for script tag filtering when filter is applied.
+	 * Test cases for filtering tags with add_onerror_to_localhost_scripts().
 	 */
 	public function provide_positive_script_filter_cases() : array {
 		return [
@@ -66,7 +64,7 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	}
 
 	/**
-	 * Data provider for script tag filtering when filter has no effect.
+	 * Test cases where add_onerror_to_localhost_scripts() should have no effect.
 	 */
 	public function provide_negative_script_filter_cases() : array {
 		return [
