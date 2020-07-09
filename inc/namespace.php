@@ -6,15 +6,6 @@
 namespace Asset_Loader;
 
 /**
- * Is this a development environment?
- *
- * @return bool
- */
-function is_development() {
-	return defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
-}
-
-/**
  * Register some or all scripts and styles defined in a manifest file.
  *
  * @param string $manifest_path Absolute path to a Webpack asset manifest file.
@@ -71,6 +62,7 @@ function register_assets( $manifest_path, $options = [] ) {
 		}
 
 		if ( $is_js ) {
+			Admin\maybe_setup_ssl_cert_error_handling( $asset_uri );
 			wp_register_script(
 				$options['handle'],
 				$asset_uri,
@@ -106,35 +98,6 @@ function register_assets( $manifest_path, $options = [] ) {
 		return null;
 	}
 	return $registered;
-}
-
-/**
- * Enqueue some or all scripts and styles defined in a manifest file.
- *
- * @param string $manifest_path Absolute path to a Webpack asset manifest file.
- * @param array  $options {
- *     @type array    $scripts Script dependencies.
- *     @type function $filter  Filter function to limit which scripts are enqueued.
- *     @type string   $handle  Style/script handle. (Default is last part of directory name.)
- *     @type array    $styles  Style dependencies.
- * }
- * @return array|null An array of registered script and style handles, or null.
- */
-function enqueue_assets( $manifest_path, $options = [] ) {
-	$registered = register_assets( $manifest_path, $options );
-	if ( empty( $registered ) ) {
-		return false;
-	}
-
-	foreach ( $registered['scripts'] as $handle ) {
-		wp_enqueue_script( $handle );
-	}
-	foreach ( $registered['styles'] as $handle ) {
-		wp_enqueue_style( $handle );
-	}
-
-	// Signal that auto-loading occurred.
-	return true;
 }
 
 /**
