@@ -95,7 +95,7 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 		return [
 			'hashed asset filename' => [
 				'main.03bfa96fd1c694ca18b3.js',
-				'manifest-should-not-matter-here.json',
+				dirname( __DIR__ ) . '/fixtures/prod-asset-manifest.json',
 				null,
 				'Version should be "null" if asset is determined to contain a hash already',
 			],

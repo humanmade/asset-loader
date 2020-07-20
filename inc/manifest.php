@@ -83,11 +83,11 @@ function get_manifest_resource( string $manifest_path, string $asset ) : ?string
  */
 function get_version( string $asset_uri, string $manifest_path ) : ?string {
 	// Guess whether the provided asset URI is already uniquely hashed using the
-	// heuristic of "contains a 25-character-or-more substring made up of nothing
+	// heuristic of "contains a 16-character-or-more substring made up of nothing
 	// but numbers and the letters a through f", which matches most common hash
 	// algorithms (including Webpack's default of MD4) while rarely matching
 	// any human-readable naming scheme.
-	if ( preg_match( '/[a-f0-9]{25}/', $asset_uri ) ) {
+	if ( preg_match( '/[a-f0-9]{16}/', $asset_uri ) ) {
 		// If the file is already hashed then a version string is not required.
 		return null;
 	}
