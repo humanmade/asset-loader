@@ -5,6 +5,8 @@
 
 namespace Asset_Loader\Manifest;
 
+use Altis;
+
 /**
  * Attempt to load a manifest at the specified path and parse its contents as JSON.
  *
@@ -64,4 +66,57 @@ function get_manifest_resource( string $manifest_path, string $asset ) : ?string
 	}
 
 	return $dev_assets[ $asset ];
+}
+
+/**
+ * Given an asset URI and a manifest file path, attempt to derive a unique
+ * version number to use when registering that asset with WordPress.
+ *
+ * The preferred approach here is for the Webpack build to render output files
+ * with a hashed filename: see https://webpack.js.org/guides/caching/
+ *
+ * @param string $asset_uri     String URI of an asset to be registered.
+ * @param string $manifest_path File system path for an asset manifest JSON file.
+ *
+ * @return string|null A unique revision string, or else null if asset versioning
+ * is not possible or is determined not to be needed.
+ */
+function get_version( string $asset_uri, string $manifest_path ) : ?string {
+	// Guess whether the provided asset URI is already uniquely hashed using the
+	// heuristic of "contains a 25-character-or-more substring made up of nothing
+	// but numbers and the letters a through f", which matches most common hash
+	// algorithms (including Webpack's default of MD4) while rarely matching
+	// any human-readable naming scheme.
+	if ( preg_match( '/[a-f0-9]{25}/', $asset_uri ) ) {
+		// If the file is already hashed then a version string is not required.
+		return null;
+	}
+
+	// Next, try hashing the contents of the asset manifest file (if available).
+	// We don't hash the asset file itself because we may not know where to find
+	// those on disk -- this does mean a new asset file invalidates ALL deployed
+	// assets, but that is still preferable to versioning based on the Altis
+	// revision constant (our last resort).
+	static $manifest_hashes = [];
+
+	if ( isset( $manifest_hashes[ $manifest_path ] ) ) {
+		return $manifest_hashes[ $manifest_path ];
+	}
+
+	if ( file_exists( $manifest_path ) ) {
+		$manifest_hash = md5_file( $manifest_path );
+		if ( $manifest_hash ) {
+			$manifest_hashes[ $manifest_path ] = $manifest_hash;
+			return $manifest_hashes[ $manifest_path ];
+		}
+	}
+
+	// Finally, use the Altis deployment revision when available. This is a
+	// heavy-handed solution which will expire uncached assets whenever a new
+	// deploy goes out, so we recommend using a hashed asset filename instead.
+	if ( function_exists( 'Altis\\get_environment_codebase_revision' ) ) {
+		return Altis\get_environment_codebase_revision();
+	}
+
+	return null;
 }

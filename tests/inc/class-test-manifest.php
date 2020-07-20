@@ -6,6 +6,7 @@
 namespace Asset_Loader\Tests;
 
 use Asset_Loader\Manifest;
+use WP_Mock;
 
 class Test_Manifest extends Asset_Loader_Test_Case {
 	/**
@@ -74,5 +75,51 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 				'resources not included in the production manifest should return null',
 			],
 		];
+	}
+
+	/**
+	 * Test get_version() function.
+	 *
+	 * @dataProvider provide_get_version_cases
+	 */
+	public function test_get_version( string $asset_uri, string $manifest_path, ?string $expected, string $message ) : void {
+		$version = Manifest\get_version( $asset_uri, $manifest_path );
+
+		$this->assertEquals( $expected, $version, $message );
+	}
+
+	/**
+	 * Test cases for get_version() utility function.
+	 */
+	public function provide_get_version_cases() : array {
+		return [
+			'hashed asset filename' => [
+				'main.03bfa96fd1c694ca18b3.js',
+				'manifest-should-not-matter-here.json',
+				null,
+				'Version should be "null" if asset is determined to contain a hash already',
+			],
+			'fall back to manifest content hash' => [
+				'main.js',
+				dirname( __DIR__ ) . '/fixtures/prod-asset-manifest.json',
+				'2a9dea09d6ed09f7c4ce052b82cc4999',
+				'Version should use MD5 hash of asset manifest file if asset is not hashed already',
+			],
+			'default to "null" if no version can be derived' => [
+				'main.js',
+				'good-luck-finding-this-nonexistent-manifest.json',
+				null,
+				'Version should use MD5 hash of asset manifest file if asset is not hashed already',
+			],
+		];
+	}
+
+	public function test_get_version_in_altis_environment() : void {
+		WP_Mock::userFunction( 'Altis\\get_environment_codebase_revision' )
+			->andReturn( 'spiffy-altis-deploy-revision' );
+
+		$version = Manifest\get_version( 'unhashed.js', 'another-nonexistent-file.json' );
+
+		$this->assertEquals( 'spiffy-altis-deploy-revision', $version, 'Version should fall back to the deployed Altis revision when available' );
 	}
 }
