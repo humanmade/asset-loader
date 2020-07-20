@@ -301,7 +301,7 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 			$options['handle'],
 			$asset_uri,
 			$options['dependencies'],
-			$asset_uri
+			Manifest\get_version( $asset_uri, $manifest_path ),
 		);
 	} else {
 		Admin\maybe_setup_ssl_cert_error_handling( $asset_uri );
@@ -309,7 +309,7 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 			$options['handle'],
 			$asset_uri,
 			$options['dependencies'],
-			$asset_uri,
+			Manifest\get_version( $asset_uri, $manifest_path ),
 			true
 		);
 	}
