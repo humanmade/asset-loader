@@ -9,15 +9,6 @@ use Asset_Loader\Paths;
 use WP_Mock;
 
 class Test_Paths extends Asset_Loader_Test_Case {
-	public function setUp() : void {
-		parent::setUp();
-
-		WP_Mock::userFunction( 'trailingslashit' )
-			->andReturnUsing( function( string $str ) : string {
-				return preg_replace( '#/*$#', '/', $str );
-			} );
-	}
-
 	/**
 	 * Test get_file_uri(), which is the primary function declared in
 	 * the Paths namespace that is intended to be used elsewhere.
