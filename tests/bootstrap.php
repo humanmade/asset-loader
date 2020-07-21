@@ -22,5 +22,6 @@ require_once dirname( __DIR__ ) . '/inc/manifest.php';
 require_once dirname( __DIR__ ) . '/inc/namespace.php';
 require_once dirname( __DIR__ ) . '/inc/paths.php';
 
-// Load our base test case class.
+// Load our base test case classes.
 require_once __DIR__ . '/class-asset-loader-test-case.php';
+require_once __DIR__ . '/class-mock-asset-registry.php';
