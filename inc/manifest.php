@@ -61,11 +61,7 @@ function get_assets_list( string $manifest_path ) {
 function get_manifest_resource( string $manifest_path, string $asset ) : ?string {
 	$dev_assets = load_asset_manifest( $manifest_path );
 
-	if ( ! isset( $dev_assets[ $asset ] ) ) {
-		return null;
-	}
-
-	return $dev_assets[ $asset ];
+	return $dev_assets[ $asset ] ?? null;
 }
 
 /**
