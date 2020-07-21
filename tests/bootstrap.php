@@ -3,9 +3,6 @@
  * Bootstrap our PHPUnit tests.
  */
 
-namespace Asset_Loader\Tests;
-
-use WP_Mock;
 
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 
