@@ -22,7 +22,7 @@ class Asset_Loader_Test_Case extends WP_Mock\Tools\TestCase {
 
 		WP_Mock::userFunction( 'trailingslashit' )->andReturnUsing(
 			function( string $str ) : string {
-				return preg_replace( '#/*$#', '/', $str );
+				return rtrim( $str, '/\\' ) . '/';
 			}
 		);
 	}
