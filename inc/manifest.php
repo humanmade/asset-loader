@@ -99,7 +99,7 @@ function get_version( string $asset_uri, string $manifest_path ) : ?string {
 		return $manifest_hashes[ $manifest_path ];
 	}
 
-	if ( file_exists( $manifest_path ) ) {
+	if ( is_readable( $manifest_path ) ) {
 		$manifest_hash = md5_file( $manifest_path );
 		if ( $manifest_hash ) {
 			$manifest_hashes[ $manifest_path ] = $manifest_hash;
