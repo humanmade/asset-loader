@@ -142,7 +142,7 @@ function render_localhost_error_detection_script() : void {
 	// Set up processErrors to run 1 second after page load.
 	document.addEventListener( 'DOMContentLoaded', function() {
 		setTimeout( processErrors, 1000 );
-	} );
+	}, { once: true } );
 } )();
 </script>
 	<?php
