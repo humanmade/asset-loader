@@ -5,6 +5,8 @@
 - **Breaking**: Remove undocumented `Asset_Loader\is_development` method.
 - **Breaking**: Remove undocumented `Asset_Loader\enqueue_assets` method.
 - **New**: Introduce new `Asset_Loader\register_asset()` and `Asset_Loader\enqueue_asset()` public API.
+  - Assets should now be registered individually.
+  - If a bundle exports both a CSS and JS file, both files should be registered or enqueued individually.
 - Refactor how SSL warning notice behavior gets triggered during asset registration.
 - Change how version strings are determined when registering assets
   - If asset is detected to be using a uniquely hashed filename, no version string is used.
