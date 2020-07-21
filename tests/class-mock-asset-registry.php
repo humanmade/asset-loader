@@ -23,13 +23,6 @@ class Mock_Asset_Registry {
 	public $enqueued;
 
 	public function __construct() {
-		$this->reset();
-	}
-
-	/**
-	 * Clean out the arrays of registered or enqueued assets.
-	 */
-	public function reset() : void {
 		$this->registered = [];
 		$this->enqueued = [];
 	}
