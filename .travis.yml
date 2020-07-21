@@ -1,5 +1,9 @@
 # Travis CI Configuration File
 
+branches:
+  only:
+    - main
+
 # Tell Travis CI we're using PHP
 language: php
 
