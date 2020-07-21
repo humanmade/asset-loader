@@ -10,6 +10,7 @@ namespace Asset_Loader;
 /**
  * Register some or all scripts and styles defined in a manifest file.
  *
+ * @deprecated 0.4.0
  * @param string $manifest_path Absolute path to a Webpack asset manifest file.
  * @param array  $options {
  *     @type array    $scripts Script dependencies.
@@ -20,6 +21,14 @@ namespace Asset_Loader;
  * @return array|null An array of registered script and style handles, or null.
  */
 function register_assets( $manifest_path, $options = [] ) {
+	if ( function_exists( '_doing_it_wrong' ) ) {
+		_doing_it_wrong(
+			'register_assets',
+			'register_assets() is deprecated and will be removed soon. Use register_asset() instead.',
+			'0.4.0'
+		);
+	}
+
 	$defaults = [
 		'handle'  => basename( plugin_dir_path( $manifest_path ) ),
 		'filter'  => '__return_true',
@@ -108,6 +117,7 @@ function register_assets( $manifest_path, $options = [] ) {
  *
  * The manifest, build_path, and target_bundle options are required.
  *
+ * @deprecated 0.4.0
  * @param string $manifest_path Absolute file system path to Webpack asset manifest file.
  * @param string $target_bundle The expected string filename of the bundle to load from the manifest.
  * @param array  $options {
@@ -209,6 +219,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
  *
  * The manifest, build_path, and target_bundle options are required.
  *
+ * @deprecated 0.4.0
  * @param string $manifest_path Absolute file system path to Webpack asset manifest file.
  * @param string $target_bundle The expected string filename of the bundle to load from the manifest.
  * @param array  $options {
