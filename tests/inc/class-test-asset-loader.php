@@ -172,6 +172,72 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 		);
 	}
 
+	public function test_register_css_asset_dev() : void {
+		Asset_Loader\register_asset(
+			$this->dev_manifest,
+			'frontend-styles.css',
+			[
+				'handle' => 'frontend-styles',
+				'dependencies' => [ 'dependency-style' ],
+			]
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'frontend-styles',
+				'src' => 'https://localhost:9090/build/frontend-styles.js',
+				'deps' => [],
+				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->scripts->get_registered( 'frontend-styles' )
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'frontend-styles',
+				'src' => false,
+				'deps' => [ 'dependency-style' ],
+				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->styles->get_registered( 'frontend-styles' )
+		);
+	}
+
+	public function test_register_css_asset_then_corresponding_js_asset_dev() : void {
+		Asset_Loader\register_asset(
+			$this->dev_manifest,
+			'editor.css',
+			[
+				'handle' => 'editor',
+				'dependencies' => [ 'style-dependency' ],
+			]
+		);
+		Asset_Loader\register_asset(
+			$this->dev_manifest,
+			'editor.js',
+			[
+				'handle' => 'editor',
+				'dependencies' => [ 'script-dependency' ],
+			]
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'editor',
+				'src' => 'https://localhost:9090/build/editor.js',
+				'deps' => [ 'script-dependency' ],
+				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->scripts->get_registered( 'editor' )
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'editor',
+				'src' => false,
+				'deps' => [ 'style-dependency' ],
+				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->styles->get_registered( 'editor' )
+		);
+	}
+
 	/*
 	- Load dev JS file (simple case)
 	- Load prod JS file (simple case)
