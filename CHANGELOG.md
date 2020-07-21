@@ -6,6 +6,10 @@
 - **Breaking**: Remove undocumented `Asset_Loader\enqueue_assets` method.
 - **New**: Introduce new `Asset_Loader\register_asset()` and `Asset_Loader\enqueue_asset()` public API.
 - Refactor how SSL warning notice behavior gets triggered during asset registration.
+- Change how version strings are determined when registering assets
+  - If asset is detected to be using a uniquely hashed filename, no version string is used.
+  - If an asset manifest is in use, assets are versioned based on a content hash of that manifest.
+  - If no other version information can be determined and the loader is running within[Altis](https://altis-dxp.com), the Altis revision constant is used to version registered assets.
 
 ## v0.3.4
 
