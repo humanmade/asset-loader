@@ -3,6 +3,8 @@
  * Define utility functions for evaluating and manipulating file system paths & uris.
  */
 
+declare( strict_types=1 );
+
 namespace Asset_Loader\Paths;
 
 /**
@@ -56,10 +58,10 @@ function is_plugin_path( string $path ): bool {
  * Take in an absolute file system path that may be part of a theme or plugin
  * directory, and return the URL for that file.
  *
- * @param string $path Absolute file path..
+ * @param string $path Absolute file path.
  * @return string
  */
-function plugin_or_theme_file_uri( string $path ): string {
+function get_file_uri( string $path ): string {
 	if ( ! is_plugin_path( $path ) ) {
 		return get_theme_file_uri( theme_relative_path( $path ) );
 	}

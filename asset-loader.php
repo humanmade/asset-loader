@@ -20,6 +20,8 @@
  * License URI: https//github.com/humanmade/asset-loader/tree/master/LICENSE
  */
 
+declare( strict_types=1 );
+
 // phpcs:disable HM.Files.NamespaceDirectoryName
 namespace Asset_Loader;
 

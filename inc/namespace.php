@@ -3,16 +3,9 @@
  * Define the Asset_Loader namespace exposing methods for use in other themes & plugins.
  */
 
-namespace Asset_Loader;
+declare( strict_types=1 );
 
-/**
- * Is this a development environment?
- *
- * @return bool
- */
-function is_development() {
-	return defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
-}
+namespace Asset_Loader;
 
 /**
  * Register some or all scripts and styles defined in a manifest file.
@@ -71,6 +64,7 @@ function register_assets( $manifest_path, $options = [] ) {
 		}
 
 		if ( $is_js ) {
+			Admin\maybe_setup_ssl_cert_error_handling( $asset_uri );
 			wp_register_script(
 				$options['handle'],
 				$asset_uri,
@@ -109,35 +103,6 @@ function register_assets( $manifest_path, $options = [] ) {
 }
 
 /**
- * Enqueue some or all scripts and styles defined in a manifest file.
- *
- * @param string $manifest_path Absolute path to a Webpack asset manifest file.
- * @param array  $options {
- *     @type array    $scripts Script dependencies.
- *     @type function $filter  Filter function to limit which scripts are enqueued.
- *     @type string   $handle  Style/script handle. (Default is last part of directory name.)
- *     @type array    $styles  Style dependencies.
- * }
- * @return array|null An array of registered script and style handles, or null.
- */
-function enqueue_assets( $manifest_path, $options = [] ) {
-	$registered = register_assets( $manifest_path, $options );
-	if ( empty( $registered ) ) {
-		return false;
-	}
-
-	foreach ( $registered['scripts'] as $handle ) {
-		wp_enqueue_script( $handle );
-	}
-	foreach ( $registered['styles'] as $handle ) {
-		wp_enqueue_style( $handle );
-	}
-
-	// Signal that auto-loading occurred.
-	return true;
-}
-
-/**
  * Attempt to register a particular script bundle from a manifest, falling back
  * to wp_register_script when the manifest is not available.
  *
@@ -156,6 +121,14 @@ function enqueue_assets( $manifest_path, $options = [] ) {
  * @return array|null An array of registered script and style handles, or null.
  */
 function autoregister( string $manifest_path, string $target_bundle, array $options = [] ) {
+	if ( function_exists( '_doing_it_wrong' ) ) {
+		_doing_it_wrong(
+			'autoregister',
+			'autoregister() is deprecated and will be removed soon. Use register_asset() instead.',
+			'0.4.0'
+		);
+	}
+
 	// Guess that the manifest resides within the build folder if no build path is provided.
 	$inferred_build_folder = Paths\containing_folder( $manifest_path );
 
@@ -205,7 +178,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 	if ( file_exists( $js_bundle ) ) {
 		wp_register_script(
 			$options['handle'],
-			Paths\plugin_or_theme_file_uri( $js_bundle ),
+			Paths\get_file_uri( $js_bundle ),
 			$options['scripts'],
 			md5_file( $js_bundle ),
 			true
@@ -216,7 +189,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 	if ( file_exists( $css_bundle ) ) {
 		wp_register_style(
 			$options['handle'],
-			Paths\plugin_or_theme_file_uri( $css_bundle ),
+			Paths\get_file_uri( $css_bundle ),
 			$options['styles'],
 			md5_file( $css_bundle )
 		);
@@ -249,6 +222,14 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
  * @return void
  */
 function autoenqueue( string $manifest_path, string $target_bundle, array $options = [] ) {
+	if ( function_exists( '_doing_it_wrong' ) ) {
+		_doing_it_wrong(
+			'autoenqueue',
+			'autoenqueue() is deprecated and will be removed soon. Use enqueue_asset() instead.',
+			'0.4.0'
+		);
+	}
+
 	$registered = autoregister( $manifest_path, $target_bundle, $options );
 
 	if ( empty( $registered ) ) {
@@ -260,5 +241,168 @@ function autoenqueue( string $manifest_path, string $target_bundle, array $optio
 	}
 	foreach ( $registered['styles'] as $handle ) {
 		wp_enqueue_style( $handle );
+	}
+}
+
+/**
+ * Helper function to naively check whether or not a given URI is a CSS resource.
+ *
+ * @param string $uri A URI to test for CSS-ness.
+ * @return boolean Whether that URI points to a CSS file.
+ */
+function is_css( string $uri ) : bool {
+	return preg_match( '/\.css(\?.*)?$/', $uri ) === 1;
+}
+
+/**
+ * Register a script, or update an already-registered script using the provided
+ * handle which did not declare dependencies of its own to use the dependencies
+ * array passed in with a second registration request.
+ *
+ * @param string              $handle       Handle at which to register this script.
+ * @param string              $asset_uri    URI of the registered script file.
+ * @param string[]            $dependencies Array of script dependencies.
+ * @param string|boolean|null $version      Optional version string for asset.
+ * @param boolean             $in_footer    Whether to load this script in footer.
+ * @return string
+ */
+function _register_or_update_script( string $handle, string $asset_uri, array $dependencies, $version = false, $in_footer = true ) : ?string {
+	// Handle the case where a `register_asset( 'foo.css' )` call falls back to
+	// enqueue the dev bundle's JS. Since the dependencies provided in that CSS-
+	// specific registration call would not apply to the world of scripts, but
+	// a script asset would still get registered, we may need to update that new
+	// script's registration to reflect an actual list of JS dependencies if we
+	// later called `register_asset( 'foo.js' )`.
+	if ( ! empty( $dependencies ) ) {
+		$existing_scripts = wp_scripts();
+		if ( isset( $existing_scripts->registered[ $handle ]->deps ) ) {
+			if ( ! empty( $existing_scripts->registered[ $handle ]->deps ) ) {
+				// We have dependencies, but so does the already-registered script.
+				// This is a weird state, and may be an error in future releases.
+				return null;
+			}
+
+			$existing_scripts->registered[ $handle ]->deps = $dependencies;
+
+			// Updating those dependencies is assumed to be all that needs to be done.
+			return $handle;
+		}
+	}
+	wp_register_script( $handle, $asset_uri, $dependencies, $version, $in_footer );
+
+	return $handle;
+}
+
+/**
+ * Attempt to register a particular script bundle from a manifest.
+ *
+ * @param string $manifest_path File system path for an asset manifest JSON file.
+ * @param string $target_asset  Asset to retrieve within the specified manifest.
+ * @param array  $options {
+ *     @type string $handle       Handle to use when enqueuing the asset. Required.
+ *     @type array  $dependencies Script or Style dependencies. Optional.
+ * }
+ */
+function register_asset( string $manifest_path, string $target_asset, array $options = [] ) : void {
+	$defaults = [
+		'dependencies' => [],
+	];
+	$options = wp_parse_args( $options, $defaults );
+
+	// Track whether we are falling back to a JS file because a CSS asset could not be found.
+	$is_js_style_fallback = false;
+
+	$manifest_folder = trailingslashit( dirname( $manifest_path ) );
+
+	$asset_uri = Manifest\get_manifest_resource( $manifest_path, $target_asset );
+
+	// If we fail to match a .css asset, try again with .js in case there is a
+	// JS wrapper for that asset available (e.g. when using DevServer).
+	if ( empty( $asset_uri ) && is_css( $target_asset ) ) {
+		$asset_uri = Manifest\get_manifest_resource( $manifest_path, preg_replace( '/\.css$/', '.js', $target_asset ) );
+		if ( ! empty( $asset_uri ) ) {
+			$is_js_style_fallback = true;
+		}
+	}
+
+	// If asset is not present in manifest, attempt to resolve the $target_asset
+	// relative to the folder containing the manifest file.
+	if ( empty( $asset_uri ) && file_exists( $manifest_folder . $target_asset ) ) {
+		// TODO: Consider checking file_exists( $manifest_folder . $target_asset )
+		// and warning (in console or error log) if it is not present on disk.
+		$asset_uri = $target_asset;
+	}
+
+	// Use the asset URI as the asset handle if no handle was provided.
+	if ( empty( $options['handle'] ) ) {
+		$options['handle'] = $asset_uri;
+	}
+
+	// Reconcile static asset build paths relative to the manifest's directory.
+	if ( strpos( $asset_uri, '//' ) === false ) {
+		$asset_uri = Paths\get_file_uri( $manifest_folder . $asset_uri );
+	}
+
+	$asset_version = Manifest\get_version( $asset_uri, $manifest_path );
+
+	if ( is_css( $asset_uri ) ) {
+		// Register a normal CSS bundle.
+		wp_register_style(
+			$options['handle'],
+			$asset_uri,
+			$options['dependencies'],
+			$asset_version
+		);
+	} elseif ( $is_js_style_fallback ) {
+		// We're registering a JS bundle when we originally asked for a CSS bundle.
+		// Register the JS, but if any dependencies were passed in, also register a
+		// dummy style bundle so that those style dependencies still get loaded.
+		Admin\maybe_setup_ssl_cert_error_handling( $asset_uri );
+		_register_or_update_script(
+			$options['handle'],
+			$asset_uri,
+			[],
+			$asset_version,
+			true
+		);
+		if ( ! empty( $options['dependencies'] ) ) {
+			wp_register_style(
+				$options['handle'],
+				false,
+				$options['dependencies'],
+				$asset_version
+			);
+		}
+	} else {
+		// Register a normal JS bundle.
+		Admin\maybe_setup_ssl_cert_error_handling( $asset_uri );
+		_register_or_update_script(
+			$options['handle'],
+			$asset_uri,
+			$options['dependencies'],
+			$asset_version,
+			true
+		);
+	}
+}
+
+/**
+ * Attempt to register and then enqueue a particular script bundle from a manifest.
+ *
+ * @param string $manifest_path File system path for an asset manifest JSON file.
+ * @param string $target_asset  Asset to retrieve within the specified manifest.
+ * @param array  $options {
+ *     @type string $handle       Handle to use when enqueuing the asset. Required.
+ *     @type array  $dependencies Script or Style dependencies. Optional.
+ * }
+ */
+function enqueue_asset( string $manifest_path, string $target_asset, array $options = [] ) : void {
+	register_asset( $manifest_path, $target_asset, $options );
+
+	// $target_asset will share a filename extension with the enqueued asset.
+	if ( is_css( $target_asset ) ) {
+		wp_enqueue_style( $options['handle'] );
+	} else {
+		wp_enqueue_script( $options['handle'] );
 	}
 }
