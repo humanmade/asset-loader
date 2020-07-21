@@ -349,7 +349,7 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 			$options['handle'],
 			$asset_uri,
 			$options['dependencies'],
-			$asset_version,
+			$asset_version
 		);
 	} elseif ( $is_js_style_fallback ) {
 		// We're registering a JS bundle when we originally asked for a CSS bundle.
