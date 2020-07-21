@@ -111,102 +111,246 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	}
 
 	/**
-	 * Test register_asset() behavior with production JS assets.
+	 * Test register_asset() behavior for script assets.
+	 *
+	 * @dataProvider provide_script_asset_cases
 	 */
-	public function test_register_prod_script() : void {
-		Asset_Loader\enqueue_asset( $this->prod_manifest, 'editor.js', [
-			'handle' => 'custom-handle',
-			'dependencies' => [ 'wp-data' ],
-		] );
+	public function test_register_script( string $manifest, string $resource, array $options, array $expected ) : void {
+		Asset_Loader\register_asset( $this->{$manifest}, $resource, $options );
 
-		$this->assertEquals(
-			[
-				'handle'   => 'custom-handle',
-				'src'      => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
-				'deps'     => [ 'wp-data' ],
-				'ver'      => null,
-			],
-			$this->scripts->get_registered( 'custom-handle' )
-		);
+		$this->assertEquals( $expected, $this->scripts->get_registered( $expected['handle'] ) );
 	}
 
 	/**
-	 * Test enqueue_asset() behavior with production JS assets.
+	 * Test enqueue_asset() behavior for script assets.
+	 *
+	 * @dataProvider provide_script_asset_cases
 	 */
-	public function test_enqueue_prod_script() : void {
-		Asset_Loader\enqueue_asset( $this->prod_manifest, 'editor.js', [
-			'handle' => 'custom-handle',
-			'dependencies' => [ 'wp-data' ],
-		] );
+	public function test_enqueue_script( string $manifest, string $resource, array $options, array $expected ) : void {
+		Asset_Loader\enqueue_asset( $this->{$manifest}, $resource, $options );
 
-		$this->assertEquals(
-			[
-				'handle'   => 'custom-handle',
-				'src'      => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
-				'deps'     => [ 'wp-data' ],
-				'ver'      => null,
-			],
-			$this->scripts->get_registered( 'custom-handle' )
-		);
+		$this->assertEquals( $expected, $this->scripts->get_registered( $expected['handle'] ) );
+		$this->assertEmpty( $this->styles->registered );
 
-		$this->assertEquals( [ 'custom-handle' ], $this->scripts->get_enqueued() );
+		$this->assertEquals( [ $expected['handle'] ], $this->scripts->get_enqueued() );
 	}
 
-	public function test_register_css_asset_production() : void {
-		Asset_Loader\register_asset(
-			$this->prod_manifest,
-			'frontend-styles.css',
-			[
-				'handle' => 'frontend-styles',
-				'dependencies' => [ 'dependency-style' ],
-			]
-		);
-		$this->assertEquals(
-			[
-				'handle' => 'frontend-styles',
-				'src' => 'https://my.theme/uri/fixtures/frontend-styles.96a500e3dd1eb671f25e.css',
-				'deps' => [ 'dependency-style' ],
-				'ver' => null,
+	/**
+	 * Script test cases for register_asset and enqueue_asset.
+	 */
+	public function provide_script_asset_cases() : array {
+		return [
+			'production script' => [
+				'prod_manifest',
+				'editor.js',
+				[
+					'handle'       => 'custom-handle',
+					'dependencies' => [ 'wp-data' ],
+				],
+				[
+					'handle' => 'custom-handle',
+					'src'    => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
+					'deps'   => [ 'wp-data' ],
+					'ver'    => null,
+				],
 			],
-			$this->styles->get_registered( 'frontend-styles' )
-		);
+			'development script' => [
+				'dev_manifest',
+				'editor.js',
+				[
+					'handle'       => 'editor-bundle',
+					'dependencies' => [ 'wp-data', 'wp-element' ],
+				],
+				[
+					'handle' => 'editor-bundle',
+					'src'    => 'https://localhost:9090/build/editor.js',
+					'deps'   => [ 'wp-data', 'wp-element' ],
+					'ver'    => '499bb147f8e7234d957a47ac983e19e7',
+				],
+			],
+		];
 	}
 
-	public function test_register_css_asset_dev() : void {
+	/**
+	 * Test register_asset() behavior for style assets.
+	 *
+	 * @dataProvider provide_style_asset_cases
+	 */
+	public function test_register_style( string $manifest, string $resource, array $options, array $expected ) : void {
+		Asset_Loader\register_asset( $this->{$manifest}, $resource, $options );
+
+		$this->assertEquals( $expected, $this->styles->get_registered( $expected['handle'] ) );
+	}
+
+	/**
+	 * Test enqueue_asset() behavior for style assets.
+	 *
+	 * @dataProvider provide_style_asset_cases
+	 */
+	public function test_enqueue_style( string $manifest, string $resource, array $options, array $expected ) : void {
+		Asset_Loader\enqueue_asset( $this->{$manifest}, $resource, $options );
+
+		$this->assertEquals( $expected, $this->styles->get_registered( $expected['handle'] ) );
+		$this->assertEmpty( $this->scripts->registered );
+
+		$this->assertEquals( [ $expected['handle'] ], $this->styles->get_enqueued() );
+	}
+
+	/**
+	 * Stylesheet test cases for register_asset and enqueue_asset.
+	 */
+	public function provide_style_asset_cases() : array {
+		return [
+			'production stylesheet' => [
+				'prod_manifest',
+				'frontend-styles.css',
+				[
+					'handle'       => 'frontend-styles',
+					'dependencies' => [ 'dependency-style' ],
+				],
+				[
+					'handle' => 'frontend-styles',
+					'src'    => 'https://my.theme/uri/fixtures/frontend-styles.96a500e3dd1eb671f25e.css',
+					'deps'   => [ 'dependency-style' ],
+					'ver'    => null,
+				],
+			],
+			'production stylesheet with no explicit handle' => [
+				'prod_manifest',
+				'frontend-styles.css',
+				[
+					'dependencies' => [ 'dependency-style' ],
+				],
+				[
+					'handle' => 'frontend-styles.css',
+					'src'    => 'https://my.theme/uri/fixtures/frontend-styles.96a500e3dd1eb671f25e.css',
+					'deps'   => [ 'dependency-style' ],
+					'ver'    => null,
+				],
+			],
+			'production stylesheet not in manifest' => [
+				'prod_manifest',
+				'theme.css',
+				[],
+				[
+					'handle' => 'theme.css',
+					'src'    => 'https://my.theme/uri/fixtures/theme.css',
+					'deps'   => [],
+					'ver'    => '2a9dea09d6ed09f7c4ce052b82cc4999',
+				],
+			],
+		];
+	}
+
+	public function test_register_dev_stylesheet() : void {
 		Asset_Loader\register_asset(
 			$this->dev_manifest,
 			'frontend-styles.css',
 			[
 				'handle' => 'frontend-styles',
+			]
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'frontend-styles',
+				'src'    => 'https://localhost:9090/build/frontend-styles.js',
+				'deps'   => [],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->scripts->get_registered( 'frontend-styles' )
+		);
+		$this->assertEquals( [], $this->styles->registered );
+	}
+
+	public function test_enqueue_dev_stylesheet() : void {
+		Asset_Loader\enqueue_asset(
+			$this->dev_manifest,
+			'frontend-styles.css',
+			[
+				'handle' => 'frontend-styles',
+			]
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'frontend-styles',
+				'src'    => 'https://localhost:9090/build/frontend-styles.js',
+				'deps'   => [],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->scripts->get_registered( 'frontend-styles' )
+		);
+		$this->assertEquals( [], $this->styles->registered );
+
+		$this->assertEquals( [ 'frontend-styles' ], $this->scripts->get_enqueued() );
+	}
+
+	public function test_register_dev_stylesheet_with_dependencies() : void {
+		Asset_Loader\register_asset(
+			$this->dev_manifest,
+			'frontend-styles.css',
+			[
+				'handle'       => 'frontend-styles',
 				'dependencies' => [ 'dependency-style' ],
 			]
 		);
 		$this->assertEquals(
 			[
 				'handle' => 'frontend-styles',
-				'src' => 'https://localhost:9090/build/frontend-styles.js',
-				'deps' => [],
-				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+				'src'    => 'https://localhost:9090/build/frontend-styles.js',
+				'deps'   => [],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
 			],
 			$this->scripts->get_registered( 'frontend-styles' )
 		);
 		$this->assertEquals(
 			[
 				'handle' => 'frontend-styles',
-				'src' => false,
-				'deps' => [ 'dependency-style' ],
-				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+				'src'    => false,
+				'deps'   => [ 'dependency-style' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
 			],
 			$this->styles->get_registered( 'frontend-styles' )
 		);
 	}
 
-	public function test_register_css_asset_then_corresponding_js_asset_dev() : void {
+	public function test_enqueue_dev_stylesheet_with_dependencies() : void {
+		Asset_Loader\enqueue_asset(
+			$this->dev_manifest,
+			'frontend-styles.css',
+			[
+				'handle'       => 'frontend-styles',
+				'dependencies' => [ 'dependency-style' ],
+			]
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'frontend-styles',
+				'src'    => 'https://localhost:9090/build/frontend-styles.js',
+				'deps'   => [],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->scripts->get_registered( 'frontend-styles' )
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'frontend-styles',
+				'src'    => false,
+				'deps'   => [ 'dependency-style' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->styles->get_registered( 'frontend-styles' )
+		);
+
+		$this->assertEquals( [ 'frontend-styles' ], $this->scripts->get_enqueued() );
+		$this->assertEquals( [ 'frontend-styles' ], $this->styles->get_enqueued() );
+	}
+
+	public function test_register_dev_stylesheet_then_corresponding_dev_script() : void {
 		Asset_Loader\register_asset(
 			$this->dev_manifest,
 			'editor.css',
 			[
-				'handle' => 'editor',
+				'handle'       => 'editor',
 				'dependencies' => [ 'style-dependency' ],
 			]
 		);
@@ -214,35 +358,67 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 			$this->dev_manifest,
 			'editor.js',
 			[
-				'handle' => 'editor',
+				'handle'       => 'editor',
 				'dependencies' => [ 'script-dependency' ],
 			]
 		);
 		$this->assertEquals(
 			[
 				'handle' => 'editor',
-				'src' => 'https://localhost:9090/build/editor.js',
-				'deps' => [ 'script-dependency' ],
-				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+				'src'    => 'https://localhost:9090/build/editor.js',
+				'deps'   => [ 'script-dependency' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
 			],
 			$this->scripts->get_registered( 'editor' )
 		);
 		$this->assertEquals(
 			[
 				'handle' => 'editor',
-				'src' => false,
-				'deps' => [ 'style-dependency' ],
-				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+				'src'    => false,
+				'deps'   => [ 'style-dependency' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
 			],
 			$this->styles->get_registered( 'editor' )
 		);
 	}
 
-	/*
-	- Load dev JS file (simple case)
-	- Load prod JS file (simple case)
-	- Load production CSS file (simple case)
-	- enqueue CSS that falls back to JS
-	- enqueue CSS that falls back to JS *and() JS and ensure both their dependencies get handled
-	*/
+	public function test_enqueue_dev_stylesheet_then_corresponding_dev_script() : void {
+		Asset_Loader\enqueue_asset(
+			$this->dev_manifest,
+			'editor.css',
+			[
+				'handle'       => 'editor',
+				'dependencies' => [ 'style-dependency' ],
+			]
+		);
+		Asset_Loader\enqueue_asset(
+			$this->dev_manifest,
+			'editor.js',
+			[
+				'handle'       => 'editor',
+				'dependencies' => [ 'script-dependency' ],
+			]
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'editor',
+				'src'    => 'https://localhost:9090/build/editor.js',
+				'deps'   => [ 'script-dependency' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->scripts->get_registered( 'editor' )
+		);
+		$this->assertEquals(
+			[
+				'handle' => 'editor',
+				'src'    => false,
+				'deps'   => [ 'style-dependency' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->styles->get_registered( 'editor' )
+		);
+
+		$this->assertEquals( [ 'editor' ], $this->scripts->get_enqueued() );
+		$this->assertEquals( [ 'editor' ], $this->styles->get_enqueued() );
+	}
 }
