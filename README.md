@@ -81,8 +81,8 @@ function enqueue_block_editor_assets() {
 Before submitting a pull request, ensure that your PHP code passes all existing unit tests and conforms to our [coding standards](https://github.com/humanmade/coding-standards) by running these commands:
 
 ```sh
-composer run-script lint
-composer run-script test
+composer lint
+composer test
 ```
 
 If the above commands do not work, ensure you have [Composer](https://getcomposer.org/) installed on your machine & run `composer install` from the project root.

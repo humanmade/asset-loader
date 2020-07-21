@@ -10,5 +10,5 @@ php:
 install: composer install
 
 script:
-  - composer run lint
-  - composer run test
+  - composer lint
+  - composer test
