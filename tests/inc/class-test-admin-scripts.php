@@ -71,8 +71,7 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	 * @dataProvider provide_positive_script_filter_cases
 	 * @dataProvider provide_negative_script_filter_cases
 	 */
-	public function test_add_onerror_to_localhost_scripts( bool $is_admin, string $script_tag, string $src, string $expected_script_tag, string $message ) : void {
-		WP_Mock::userFunction( 'is_admin' )->andReturn( $is_admin );
+	public function test_add_onerror_to_localhost_scripts( string $script_tag, string $src, string $expected_script_tag, string $message ) : void {
 		$filtered_tag = Admin\add_onerror_to_localhost_scripts( $script_tag, 'handle does not matter', $src );
 		$this->assertEquals( $expected_script_tag, $filtered_tag, $message );
 	}
@@ -83,21 +82,18 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	public function provide_positive_script_filter_cases() : array {
 		return [
 			'filter localhost URL' => [
-				true,
 				'<script />',
 				'https://localhost:8000/script.js',
 				'<script onerror="maybeSSLError && maybeSSLError( this );" />',
 				'https://localhost:8000 script tag should receive onerror handler',
 			],
 			'filter localhost URL on different port' => [
-				true,
 				'<script />',
 				'https://localhost:9090/script.js',
 				'<script onerror="maybeSSLError && maybeSSLError( this );" />',
 				'https://localhost:9090 script tag should receive onerror handler',
 			],
 			'filter URL using home IP' => [
-				true,
 				'<script />',
 				'https://127.0.0.1:8000/script.js',
 				'<script onerror="maybeSSLError && maybeSSLError( this );" />',
@@ -111,22 +107,13 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	 */
 	public function provide_negative_script_filter_cases() : array {
 		return [
-			'no filtering outside admin' => [
-				false,
-				'<script />',
-				'https://localhost:8000/script.js',
-				'<script />',
-				'script tag should not be filtered if is_admin() is false',
-			],
 			'no filtering of non-HTTPS URIs' => [
-				true,
 				'<script />',
 				'http://localhost:8000/script.js',
 				'<script />',
 				'script tag should not be filtered if script URI is not HTTPS',
 			],
 			'no filtering of non-localhost URIs' => [
-				true,
 				'<script />',
 				'https://example.com/script.js',
 				'<script />',
