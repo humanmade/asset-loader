@@ -56,7 +56,7 @@ function maybe_setup_ssl_cert_error_handling( $script_uri ) : void {
  * @return string The script tag HTML, conditionally transformed.
  */
 function add_onerror_to_localhost_scripts( string $tag, string $handle, string $src ) : string {
-	if ( ! is_admin() || ! preg_match( get_localhost_pattern(), $src ) ) {
+	if ( ! preg_match( get_localhost_pattern(), $src ) ) {
 		return $tag;
 	}
 	return preg_replace(
