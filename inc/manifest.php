@@ -106,10 +106,10 @@ function get_version( string $asset_uri, string $manifest_path ) : ?string {
 		if ( $manifest_hash ) {
 			$manifest_hashes[ $manifest_path ] = $manifest_hash;
 			return $manifest_hashes[ $manifest_path ];
+		} else {
+			// Set "null" to prevent trying to re-hash after hashing has failed once.
+			$manifest_hashes[ $manifest_path ] = null;
 		}
-	} else {
-		// Set "null" to prevent subsequent file_exists checks during this request.
-		$manifest_hashes[ $manifest_path ] = null;
 	}
 
 	// Finally, use the Altis deployment revision when available. This is a

@@ -185,7 +185,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 	$css_bundle = $build_path . preg_replace( '/\.js$/', '.css', $target_bundle );
 
 	// Production mode. Manually register script bundles.
-	if ( file_exists( $js_bundle ) ) {
+	if ( is_readable( $js_bundle ) ) {
 		wp_register_script(
 			$options['handle'],
 			Paths\get_file_uri( $js_bundle ),
@@ -196,7 +196,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 		$registered['scripts'][] = $options['handle'];
 	}
 
-	if ( file_exists( $css_bundle ) ) {
+	if ( is_readable( $css_bundle ) ) {
 		wp_register_style(
 			$options['handle'],
 			Paths\get_file_uri( $css_bundle ),
@@ -338,8 +338,8 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 
 	// If asset is not present in manifest, attempt to resolve the $target_asset
 	// relative to the folder containing the manifest file.
-	if ( empty( $asset_uri ) && file_exists( $manifest_folder . $target_asset ) ) {
-		// TODO: Consider checking file_exists( $manifest_folder . $target_asset )
+	if ( empty( $asset_uri ) && is_readable( $manifest_folder . $target_asset ) ) {
+		// TODO: Consider checking is_readable( $manifest_folder . $target_asset )
 		// and warning (in console or error log) if it is not present on disk.
 		$asset_uri = $target_asset;
 	}
