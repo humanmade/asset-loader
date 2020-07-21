@@ -115,16 +115,16 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 */
 	public function test_register_prod_script() : void {
 		Asset_Loader\enqueue_asset( $this->prod_manifest, 'editor.js', [
-			'handle' => 'custom-handle',
+			'handle'       => 'custom-handle',
 			'dependencies' => [ 'wp-data' ],
 		] );
 
 		$this->assertEquals(
 			[
-				'handle'   => 'custom-handle',
-				'src'      => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
-				'deps'     => [ 'wp-data' ],
-				'ver'      => null,
+				'handle' => 'custom-handle',
+				'src'    => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
+				'deps'   => [ 'wp-data' ],
+				'ver'    => null,
 			],
 			$this->scripts->get_registered( 'custom-handle' )
 		);
@@ -135,16 +135,16 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 */
 	public function test_enqueue_prod_script() : void {
 		Asset_Loader\enqueue_asset( $this->prod_manifest, 'editor.js', [
-			'handle' => 'custom-handle',
+			'handle'       => 'custom-handle',
 			'dependencies' => [ 'wp-data' ],
 		] );
 
 		$this->assertEquals(
 			[
-				'handle'   => 'custom-handle',
-				'src'      => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
-				'deps'     => [ 'wp-data' ],
-				'ver'      => null,
+				'handle' => 'custom-handle',
+				'src'    => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
+				'deps'   => [ 'wp-data' ],
+				'ver'    => null,
 			],
 			$this->scripts->get_registered( 'custom-handle' )
 		);
@@ -157,16 +157,16 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 			$this->prod_manifest,
 			'frontend-styles.css',
 			[
-				'handle' => 'frontend-styles',
+				'handle'       => 'frontend-styles',
 				'dependencies' => [ 'dependency-style' ],
 			]
 		);
 		$this->assertEquals(
 			[
 				'handle' => 'frontend-styles',
-				'src' => 'https://my.theme/uri/fixtures/frontend-styles.96a500e3dd1eb671f25e.css',
-				'deps' => [ 'dependency-style' ],
-				'ver' => null,
+				'src'    => 'https://my.theme/uri/fixtures/frontend-styles.96a500e3dd1eb671f25e.css',
+				'deps'   => [ 'dependency-style' ],
+				'ver'    => null,
 			],
 			$this->styles->get_registered( 'frontend-styles' )
 		);
@@ -177,25 +177,25 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 			$this->dev_manifest,
 			'frontend-styles.css',
 			[
-				'handle' => 'frontend-styles',
+				'handle'       => 'frontend-styles',
 				'dependencies' => [ 'dependency-style' ],
 			]
 		);
 		$this->assertEquals(
 			[
 				'handle' => 'frontend-styles',
-				'src' => 'https://localhost:9090/build/frontend-styles.js',
-				'deps' => [],
-				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+				'src'    => 'https://localhost:9090/build/frontend-styles.js',
+				'deps'   => [],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
 			],
 			$this->scripts->get_registered( 'frontend-styles' )
 		);
 		$this->assertEquals(
 			[
 				'handle' => 'frontend-styles',
-				'src' => false,
-				'deps' => [ 'dependency-style' ],
-				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+				'src'    => false,
+				'deps'   => [ 'dependency-style' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
 			],
 			$this->styles->get_registered( 'frontend-styles' )
 		);
@@ -206,7 +206,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 			$this->dev_manifest,
 			'editor.css',
 			[
-				'handle' => 'editor',
+				'handle'       => 'editor',
 				'dependencies' => [ 'style-dependency' ],
 			]
 		);
@@ -214,25 +214,25 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 			$this->dev_manifest,
 			'editor.js',
 			[
-				'handle' => 'editor',
+				'handle'       => 'editor',
 				'dependencies' => [ 'script-dependency' ],
 			]
 		);
 		$this->assertEquals(
 			[
 				'handle' => 'editor',
-				'src' => 'https://localhost:9090/build/editor.js',
-				'deps' => [ 'script-dependency' ],
-				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+				'src'    => 'https://localhost:9090/build/editor.js',
+				'deps'   => [ 'script-dependency' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
 			],
 			$this->scripts->get_registered( 'editor' )
 		);
 		$this->assertEquals(
 			[
 				'handle' => 'editor',
-				'src' => false,
-				'deps' => [ 'style-dependency' ],
-				'ver' => '499bb147f8e7234d957a47ac983e19e7',
+				'src'    => false,
+				'deps'   => [ 'style-dependency' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
 			],
 			$this->styles->get_registered( 'editor' )
 		);
