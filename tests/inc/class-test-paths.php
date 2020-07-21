@@ -3,6 +3,8 @@
  * Test the path & URI helpers in the Asset_Loader\Paths namespace.
  */
 
+declare( strict_types=1 );
+
 namespace Asset_Loader\Tests;
 
 use Asset_Loader\Paths;

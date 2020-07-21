@@ -3,6 +3,8 @@
  * Helper class used to mock script & style registries underlying wp_enqueue_*.
  */
 
+declare( strict_types=1 );
+
 namespace Asset_Loader\Tests;
 
 class Mock_Asset_Registry {

@@ -3,6 +3,8 @@
  * Define functions for displaying warnings in the WP Admin.
  */
 
+declare( strict_types=1 );
+
 namespace Asset_Loader\Admin;
 
 /**

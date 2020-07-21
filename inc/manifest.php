@@ -3,6 +3,8 @@
  * Define utility functions for loading & parsing an asset manifest file.
  */
 
+declare( strict_types=1 );
+
 namespace Asset_Loader\Manifest;
 
 use Altis;

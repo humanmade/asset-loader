@@ -3,6 +3,8 @@
  * Test functions in the Asset_Loader\Manifest namespace.
  */
 
+declare( strict_types=1 );
+
 namespace Asset_Loader\Tests;
 
 use Asset_Loader\Manifest;

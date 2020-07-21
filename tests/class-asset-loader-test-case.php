@@ -3,6 +3,8 @@
  * Base class enabling WP_Mock.
  */
 
+declare( strict_types=1 );
+
 namespace Asset_Loader\Tests;
 
 use WP_Mock;

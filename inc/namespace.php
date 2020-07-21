@@ -3,6 +3,8 @@
  * Define the Asset_Loader namespace exposing methods for use in other themes & plugins.
  */
 
+declare( strict_types=1 );
+
 namespace Asset_Loader;
 
 /**

@@ -3,6 +3,8 @@
  * Test functions in the Admin_Scripts\Admin namespace.
  */
 
+declare( strict_types=1 );
+
 namespace Asset_Loader\Tests;
 
 use Asset_Loader\Admin;
