@@ -21,7 +21,7 @@ function load_asset_manifest( $path ) {
 		return $manifests[ $path ];
 	}
 
-	if ( ! file_exists( $path ) ) {
+	if ( ! is_readable( $path ) ) {
 		return null;
 	}
 	$contents = file_get_contents( $path );
