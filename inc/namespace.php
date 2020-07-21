@@ -310,11 +310,12 @@ function _register_or_update_script( string $handle, string $asset_uri, array $d
  * @param string $manifest_path File system path for an asset manifest JSON file.
  * @param string $target_asset  Asset to retrieve within the specified manifest.
  * @param array  $options {
- *     @type string $handle       Handle to use when enqueuing the asset. Required.
+ *     @type string $handle       Handle to use when enqueuing the asset. Optional.
  *     @type array  $dependencies Script or Style dependencies. Optional.
  * }
+ * @return array Array detailing which script and/or style handles got registered.
  */
-function register_asset( string $manifest_path, string $target_asset, array $options = [] ) : void {
+function register_asset( string $manifest_path, string $target_asset, array $options = [] ) : array {
 	$defaults = [
 		'dependencies' => [],
 	];
@@ -338,15 +339,10 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 
 	// If asset is not present in manifest, attempt to resolve the $target_asset
 	// relative to the folder containing the manifest file.
-	if ( empty( $asset_uri ) && is_readable( $manifest_folder . $target_asset ) ) {
+	if ( empty( $asset_uri ) ) {
 		// TODO: Consider checking is_readable( $manifest_folder . $target_asset )
 		// and warning (in console or error log) if it is not present on disk.
 		$asset_uri = $target_asset;
-	}
-
-	// Use the asset URI as the asset handle if no handle was provided.
-	if ( empty( $options['handle'] ) ) {
-		$options['handle'] = $asset_uri;
 	}
 
 	// Reconcile static asset build paths relative to the manifest's directory.
@@ -354,66 +350,77 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 		$asset_uri = Paths\get_file_uri( $manifest_folder . $asset_uri );
 	}
 
+	// Use the requested asset as the asset handle if no handle was provided.
+	$asset_handle = $options['handle'] ?? $target_asset;
 	$asset_version = Manifest\get_version( $asset_uri, $manifest_path );
+
+	// Track registered handles so we can enqueue the correct assets later.
+	$handles = [];
 
 	if ( is_css( $asset_uri ) ) {
 		// Register a normal CSS bundle.
 		wp_register_style(
-			$options['handle'],
+			$asset_handle,
 			$asset_uri,
 			$options['dependencies'],
 			$asset_version
 		);
+		$handles['style'] = $asset_handle;
 	} elseif ( $is_js_style_fallback ) {
 		// We're registering a JS bundle when we originally asked for a CSS bundle.
 		// Register the JS, but if any dependencies were passed in, also register a
 		// dummy style bundle so that those style dependencies still get loaded.
 		Admin\maybe_setup_ssl_cert_error_handling( $asset_uri );
 		_register_or_update_script(
-			$options['handle'],
+			$asset_handle,
 			$asset_uri,
 			[],
 			$asset_version,
 			true
 		);
+		$handles['script'] = $asset_handle;
 		if ( ! empty( $options['dependencies'] ) ) {
 			wp_register_style(
-				$options['handle'],
+				$asset_handle,
 				false,
 				$options['dependencies'],
 				$asset_version
 			);
+			$handles['style'] = $asset_handle;
 		}
 	} else {
 		// Register a normal JS bundle.
 		Admin\maybe_setup_ssl_cert_error_handling( $asset_uri );
 		_register_or_update_script(
-			$options['handle'],
+			$asset_handle,
 			$asset_uri,
 			$options['dependencies'],
 			$asset_version,
 			true
 		);
+		$handles['script'] = $asset_handle;
 	}
+
+	return $handles;
 }
 
 /**
- * Attempt to register and then enqueue a particular script bundle from a manifest.
+ * Register and immediately enqueue a particular asset within a manifest.
  *
  * @param string $manifest_path File system path for an asset manifest JSON file.
  * @param string $target_asset  Asset to retrieve within the specified manifest.
  * @param array  $options {
- *     @type string $handle       Handle to use when enqueuing the asset. Required.
+ *     @type string $handle       Handle to use when enqueuing the asset. Optional.
  *     @type array  $dependencies Script or Style dependencies. Optional.
  * }
  */
 function enqueue_asset( string $manifest_path, string $target_asset, array $options = [] ) : void {
-	register_asset( $manifest_path, $target_asset, $options );
+	$registered_handles = register_asset( $manifest_path, $target_asset, $options );
 
-	// $target_asset will share a filename extension with the enqueued asset.
-	if ( is_css( $target_asset ) ) {
-		wp_enqueue_style( $options['handle'] );
-	} else {
-		wp_enqueue_script( $options['handle'] );
+	if ( isset( $registered_handles['script'] ) ) {
+		wp_enqueue_script( $registered_handles['script'] );
+	}
+	if ( isset( $registered_handles['style'] ) ) {
+		wp_enqueue_style( $registered_handles['style'] );
 	}
 }
