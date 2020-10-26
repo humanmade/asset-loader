@@ -10,6 +10,26 @@ namespace Asset_Loader\Manifest;
 use Altis;
 
 /**
+ * Return the first readable file from an array of manifest paths.
+ *
+ * This is a helper which can be used when different manifest files need to be
+ * read under different conditions: for example, using a dev server manifest
+ * when the dev server is running, and a production manifest otherwise.
+ *
+ * @param string[] Array of potential paths to manifest files.
+ * @return string|null;
+ */
+function get_active_manifest( $paths ) {
+	foreach ( $paths as $path ) {
+		if ( is_readable( $path ) ) {
+			return $path;
+		}
+	}
+
+	return null;
+}
+
+/**
  * Attempt to load a manifest at the specified path and parse its contents as JSON.
  *
  * @param string $path The path to the JSON file to load.
