@@ -16,10 +16,10 @@ use Altis;
  * read under different conditions: for example, using a dev server manifest
  * when the dev server is running, and a production manifest otherwise.
  *
- * @param string[] Array of potential paths to manifest files.
- * @return string|null;
+ * @param string[] $paths Array of potential paths to manifest files.
+ * @return string|null The first readable manifest path, or null.
  */
-function get_active_manifest( $paths ) {
+function get_active_manifest( array $paths ) : ?string {
 	foreach ( $paths as $path ) {
 		if ( is_readable( $path ) ) {
 			return $path;
