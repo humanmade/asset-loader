@@ -124,4 +124,47 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 
 		$this->assertEquals( 'spiffy-altis-deploy-revision', $version, 'Version should fall back to the deployed Altis revision when available' );
 	}
+
+	/**
+	 * Test get_active_manifest() function.
+	 *
+	 * @dataProvider provide_get_active_manifest_cases
+	 */
+	public function test_get_active_manifest( array $manifest_options, ?string $expected, string $message ) : void {
+		$result = Manifest\get_active_manifest( $manifest_options );
+
+		$this->assertEquals( $expected, $result, $message );
+	}
+
+	/**
+	 * Test cases for get_manifest_resource() utility function.
+	 */
+	public function provide_get_active_manifest_cases() : array {
+		$dev_manifest = dirname( __DIR__ ) . '/fixtures/devserver-asset-manifest.json';
+		$prod_manifest = dirname( __DIR__ ) . '/fixtures/prod-asset-manifest.json';
+		$invalid_manifest_1 = dirname( __DIR__ ) . '/fixtures/does-not-exist.json';
+		$invalid_manifest_2 = dirname( __DIR__ ) . '/fixtures/also-does-not-exist.json';
+		return [
+			'first manifest exists' => [
+				[ $dev_manifest, $prod_manifest, $invalid_manifest_1, $invalid_manifest_2 ],
+				$dev_manifest,
+				'First valid manifest should be returned',
+			],
+			'second manifest exists' => [
+				[ $invalid_manifest_1, $dev_manifest, $prod_manifest, $invalid_manifest_2 ],
+				$dev_manifest,
+				'Unreadable paths should be skipped',
+			],
+			'second manifest exists' => [
+				[ $invalid_manifest_1, $invalid_manifest_2, $prod_manifest, $dev_manifest ],
+				$prod_manifest,
+				'Multiple unreadable paths should be skipped',
+			],
+			'no manifest exists' => [
+				[ $invalid_manifest_1, $invalid_manifest_2 ],
+				null,
+				'null should be returned if no manifest is readable',
+			],
+		];
+	}
 }
