@@ -7,7 +7,7 @@
         "composer/installers": "~1.0"
     },
     "require-dev": {
-        "humanmade/coding-standards": "dev-master",
+        "humanmade/coding-standards": "^1.1.0",
         "10up/wp_mock": "^0.4.2",
         "phpunit/phpunit": "^7.5"
     },
