@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.1
+
+- Fix bug where admin namespace was not loaded.
+
 ## v0.4.0
 
 - **Breaking**: Remove undocumented `Asset_Loader\is_development` method.
