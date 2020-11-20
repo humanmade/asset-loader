@@ -7,9 +7,9 @@
 - **New**: Introduce new `Asset_Loader\register_asset()` and `Asset_Loader\enqueue_asset()` public API.
   - Assets should now be registered individually.
   - If a bundle exports both a CSS and JS file, both files should be registered or enqueued individually.
-- **Deprecate** `Asset_Loader\autoenqueue()` method. Use the new, singular `register_asset()` or `enqueue_asset()` instead.
-- **Deprecate** `Asset_Loader\autoregister()` method. Use the new, singular `register_asset()` or `enqueue_asset()` instead.
-- **Deprecate** `Asset_Loader\register_assets()` method. Use the new, singular `register_asset()` or `enqueue_asset()` instead.
+- **Deprecate** `Asset_Loader\autoenqueue()` method. Use the new, singular `enqueue_asset()` instead.
+- **Deprecate** `Asset_Loader\autoregister()` method. Use the new, singular `register_asset()` instead.
+- **Deprecate** `Asset_Loader\register_assets()` method. Use the new, singular `register_asset()` instead.
 - Refactor how SSL warning notice behavior gets triggered during asset registration.
 - Change how version strings are determined when registering assets
   - If asset is detected to be using a uniquely hashed filename, no version string is used.
