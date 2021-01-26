@@ -34,6 +34,7 @@ function register_assets( $manifest_path, $options = [] ) {
 		'filter'  => '__return_true',
 		'scripts' => [],
 		'styles'  => [],
+		'in-footer' => true,
 	];
 
 	$options = wp_parse_args( $options, $defaults );
@@ -79,7 +80,7 @@ function register_assets( $manifest_path, $options = [] ) {
 				$asset_uri,
 				$options['scripts'],
 				$manifest_hash,
-				true
+				$options['in-footer']
 			);
 			$registered['scripts'][] = $options['handle'];
 		} elseif ( $is_css ) {
@@ -149,6 +150,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 		'filter'     => '__return_true',
 		'scripts'    => [],
 		'styles'     => [],
+		'in-footer'  => true,
 	];
 
 	$options = wp_parse_args( $options, $defaults );
@@ -165,6 +167,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 			},
 		'scripts' => $options['scripts'],
 		'styles'  => $options['styles'],
+		'in-footer' => $options['in-footer'],
 	] );
 
 	$build_path = trailingslashit( $options['build_path'] );
@@ -191,7 +194,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 			Paths\get_file_uri( $js_bundle ),
 			$options['scripts'],
 			md5_file( $js_bundle ),
-			true
+			$options['in-footer']
 		);
 		$registered['scripts'][] = $options['handle'];
 	}
@@ -318,6 +321,7 @@ function _register_or_update_script( string $handle, string $asset_uri, array $d
 function register_asset( string $manifest_path, string $target_asset, array $options = [] ) : array {
 	$defaults = [
 		'dependencies' => [],
+		'in-footer' => true,
 	];
 	$options = wp_parse_args( $options, $defaults );
 
@@ -396,7 +400,7 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 			$asset_uri,
 			$options['dependencies'],
 			$asset_version,
-			true
+			$options['in-footer']
 		);
 		$handles['script'] = $asset_handle;
 	}
