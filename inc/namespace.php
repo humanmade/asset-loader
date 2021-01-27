@@ -34,7 +34,6 @@ function register_assets( $manifest_path, $options = [] ) {
 		'filter'  => '__return_true',
 		'scripts' => [],
 		'styles'  => [],
-		'in-footer' => true,
 	];
 
 	$options = wp_parse_args( $options, $defaults );
@@ -80,7 +79,7 @@ function register_assets( $manifest_path, $options = [] ) {
 				$asset_uri,
 				$options['scripts'],
 				$manifest_hash,
-				$options['in-footer']
+				true
 			);
 			$registered['scripts'][] = $options['handle'];
 		} elseif ( $is_css ) {
@@ -150,7 +149,6 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 		'filter'     => '__return_true',
 		'scripts'    => [],
 		'styles'     => [],
-		'in-footer'  => true,
 	];
 
 	$options = wp_parse_args( $options, $defaults );
@@ -194,7 +192,7 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 			Paths\get_file_uri( $js_bundle ),
 			$options['scripts'],
 			md5_file( $js_bundle ),
-			$options['in-footer']
+			true
 		);
 		$registered['scripts'][] = $options['handle'];
 	}
