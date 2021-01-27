@@ -165,7 +165,6 @@ function autoregister( string $manifest_path, string $target_bundle, array $opti
 			},
 		'scripts' => $options['scripts'],
 		'styles'  => $options['styles'],
-		'in-footer' => $options['in-footer'],
 	] );
 
 	$build_path = trailingslashit( $options['build_path'] );
