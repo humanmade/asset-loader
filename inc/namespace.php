@@ -318,6 +318,7 @@ function _register_or_update_script( string $handle, string $asset_uri, array $d
 function register_asset( string $manifest_path, string $target_asset, array $options = [] ) : array {
 	$defaults = [
 		'dependencies' => [],
+		'in-footer' => true,
 	];
 	$options = wp_parse_args( $options, $defaults );
 
@@ -396,7 +397,7 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 			$asset_uri,
 			$options['dependencies'],
 			$asset_version,
-			true
+			$options['in-footer']
 		);
 		$handles['script'] = $asset_handle;
 	}

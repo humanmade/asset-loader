@@ -55,6 +55,8 @@ To register an asset to be manually enqueued later, use `Asset_Loader\register_a
 
 If a manifest is not present then `Asset_Loader` will attempt to load the specified resource from the same directory containing the manifest file.
 
+By default, all enqueues will be added at the end of the page, in the `wp_footer` action. If you need your script to be enqueued in the document `<head>`, pass the flag `'in-footer' => false,` within the options array.
+
 ## Local Development
 
 Before submitting a pull request, ensure that your PHP code passes all existing unit tests and conforms to our [coding standards](https://github.com/humanmade/coding-standards) by running these commands:
