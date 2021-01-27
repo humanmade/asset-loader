@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.0
+
+- Support enqueuing scripts in the page `<head>` by passing `'in-footer' => false` in options array.
+- Introduce `get_active_manifest()` function to return the first available manifest in a list.
+
 ## v0.4.1
 
 - Fix bug where admin namespace was not loaded.
