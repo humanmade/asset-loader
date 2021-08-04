@@ -15,7 +15,6 @@ trim_trailing_whitespace = true
 charset = utf-8
 # Tab indentation
 indent_style = tab
-tab_width = 2
 
 # Use 4-space indentation on composer.json
 [{composer.json}]
