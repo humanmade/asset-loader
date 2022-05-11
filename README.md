@@ -70,7 +70,7 @@ If the above commands do not work, ensure you have [Composer](https://getcompose
 
 ## Migrating from v0.3
 
-Prior to v0.4, the main public interface exposed by this package was a pair of methods named `autoenqueue` and `autoregister`. Internally these methods used a somewhat "magical" and inefficient method of filtering through asset resources. They are deprecated as of v0.4, and will be removed in v0.5.
+Prior to v0.4, the main public interface exposed by this package was a pair of methods named `autoenqueue` and `autoregister`. Internally these methods used a somewhat "magical" and inefficient method of filtering through asset resources. They are deprecated as of v0.4, and have since been fully removed.
 
 The following snippet of v0.3-compatible code using `autoenqueue` can be replaced fully with the `Asset_Loader\enqueue_asset()` example above.
 
