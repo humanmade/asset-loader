@@ -2,7 +2,7 @@
 
 ## Next
 
-- **Breaking**: Remove deprecated `autoregister` and `autoenqueue` methods.
+- **Breaking**: Remove deprecated `autoregister`, `autoenqueue`, and `register_assets` methods.
 
 ## v0.5.0
 
