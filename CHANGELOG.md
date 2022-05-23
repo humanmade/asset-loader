@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+- **Breaking**: Remove deprecated `autoregister`, `autoenqueue`, and `register_assets` methods.
+
 ## v0.5.0
 
 - Support enqueuing scripts in the page `<head>` by passing `'in-footer' => false` in options array.
