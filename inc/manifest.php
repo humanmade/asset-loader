@@ -51,7 +51,7 @@ function load_asset_manifest( $path ) {
 		return null;
 	}
 
-	$manifests[ $path ] = json_decode( $contents, true );
+	$manifests[ $path ] = apply_filters( 'asset_loader_manifest_contents', json_decode( $contents, true ), $path );
 
 	return $manifests[ $path ];
 }
