@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## v0.6.0
 
 - **Breaking**: Remove deprecated `autoregister`, `autoenqueue`, and `register_assets` methods.
 - Add filter `asset_loader_manifest_contents` to allow filtering of loaded asset manifest contents.
