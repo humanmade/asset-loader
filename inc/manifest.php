@@ -51,7 +51,15 @@ function load_asset_manifest( $path ) {
 		return null;
 	}
 
-	$manifests[ $path ] = json_decode( $contents, true );
+	/**
+	 * Filter the contents of the loaded manifest.
+	 *
+	 * @since 0.6.0
+	 *
+	 * @param array  $contents The loaded manifest contents.
+	 * @param string $path     The path to the JSON file loaded.
+	 */
+	$manifests[ $path ] = apply_filters( 'asset_loader_manifest_contents', json_decode( $contents, true ), $path );
 
 	return $manifests[ $path ];
 }
