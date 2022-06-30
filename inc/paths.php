@@ -66,7 +66,7 @@ function get_file_uri( string $path ): string {
 		return get_theme_file_uri( theme_relative_path( $path ) );
 	}
 
-	// If the path is inside WP_CONTENT_DIR then remove the asbilute path, passing to content_url().
+	// If the path is inside WP_CONTENT_DIR then remove the absolute path, passing to content_url().
 	if ( strpos( $path, WP_CONTENT_DIR ) === 0 ) {
 		return content_url( str_replace( WP_CONTENT_DIR, '', $path ) );
 	}
