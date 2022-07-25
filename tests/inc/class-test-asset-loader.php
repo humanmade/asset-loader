@@ -151,7 +151,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 					'handle' => 'custom-handle',
 					'src'    => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
 					'deps'   => [ 'wp-data' ],
-					'ver'    => null,
+					'ver'    => '03bfa96fd1c694ca18b3',
 				],
 			],
 			'development script' => [
@@ -212,7 +212,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 					'handle' => 'frontend-styles',
 					'src'    => 'https://my.theme/uri/fixtures/frontend-styles.96a500e3dd1eb671f25e.css',
 					'deps'   => [ 'dependency-style' ],
-					'ver'    => null,
+					'ver'    => '96a500e3dd1eb671f25e',
 				],
 			],
 			'production stylesheet with no explicit handle' => [
@@ -225,7 +225,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 					'handle' => 'frontend-styles.css',
 					'src'    => 'https://my.theme/uri/fixtures/frontend-styles.96a500e3dd1eb671f25e.css',
 					'deps'   => [ 'dependency-style' ],
-					'ver'    => null,
+					'ver'    => '96a500e3dd1eb671f25e',
 				],
 			],
 			'production stylesheet not in manifest' => [

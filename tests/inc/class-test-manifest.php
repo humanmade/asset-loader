@@ -98,8 +98,8 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 			'hashed asset filename' => [
 				'main.03bfa96fd1c694ca18b3.js',
 				dirname( __DIR__ ) . '/fixtures/prod-asset-manifest.json',
-				null,
-				'Version should be "null" if asset is determined to contain a hash already',
+				'03bfa96fd1c694ca18b3',
+				'Version should be set to the hash in the filename if asset is determined to contain a hash already',
 			],
 			'fall back to manifest content hash' => [
 				'main.js',
