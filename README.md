@@ -68,39 +68,18 @@ composer test
 
 If the above commands do not work, ensure you have [Composer](https://getcomposer.org/) installed on your machine & run `composer install` from the project root.
 
-## Migrating from v0.3
+## Release Process
 
-Prior to v0.4, the main public interface exposed by this package was a pair of methods named `autoenqueue` and `autoregister`. Internally these methods used a somewhat "magical" and inefficient method of filtering through asset resources. They are deprecated as of v0.4, and have since been fully removed.
+This project is [distributed via Packagist for use in Composer projects as `humanmade/asset-loader`](https://packagist.org/packages/humanmade/asset-loader). To release a new version, create a new tag and push it to GitHub, then ensure that tag has been recognized by Packagist. Follow these steps to ensure all version numbers and documentation get properly updated when releasing a new version:
 
-The following snippet of v0.3-compatible code using `autoenqueue` can be replaced fully with the `Asset_Loader\enqueue_asset()` example above.
-
-```php
-<?php
-namespace My_Plugin_Or_Theme;
-
-use Asset_Loader;
-
-add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_block_editor_assets' );
-
-/**
- * Enqueue the JS and CSS for blocks in the editor.
- *
- * @return void
- */
-function enqueue_block_editor_assets() {
-  Asset_Loader\autoenqueue(
-    // In a plugin, this would be `plugin_dir_path( __FILE__ )` or similar.
-    get_stylesheet_directory() . '/build/asset-manifest.json',
-    // The output filename of the Webpack build.
-    // At present this must be consistent between development & production builds.
-    'editor.js',
-    [
-      'scripts' => [ 'wp-element', 'wp-editor' ],
-      'handle'  => 'optional-manually-specified-script-handle',
-    ]
-  );
-}
-```
+- Merge all relevant pull requests you wish to include in the new version
+- Identify whether you are releasing a patch release, point release, or major release, following [semantic versioning](https://semver.org/) principles, and determine the next release's version number accordingly
+- Ensure the [Changelog](CHANGELOG.md) is updated for the new version
+- Update the version number in the [plugin header comment in `asset-loader.php`](asset-loader.php)
+- Create a tag on the `main` branch reflecting the new version number in the format `v#.#.#`, e.g. `v0.6.2` or `v1.1.0`
+- Ensure the `main` branch and all tags are pushed to GitHub
+- [Create a release](https://github.com/humanmade/asset-loader/releases/new) in GitHub from the new tag
+- If the new version does not show up in [the Packagist page for `humanmade/asset-loader`](https://packagist.org/packages/humanmade/asset-loader), request one of the project's packagist maintainers to click the "update" button
 
 ## License
 
