@@ -66,7 +66,14 @@ function get_file_uri( string $path ): string {
 		return get_theme_file_uri( theme_relative_path( $path ) );
 	}
 
-	return content_url( str_replace( WP_CONTENT_DIR, '', $path ) );
+	// If the path is inside WP_CONTENT_DIR then remove the absolute path, passing to content_url().
+	if ( strpos( $path, WP_CONTENT_DIR ) === 0 ) {
+		return content_url( str_replace( WP_CONTENT_DIR, '', $path ) );
+	}
+
+	// Attempt to use plugins_url on the path, if it's a plugin. This will also handle cases
+	// while $path is inside a symlink.
+	return plugins_url( basename( $path ), $path );
 }
 
 /**
