@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+
+- Ensure that a version string is always set on an asset, even when the built file has a hash string in the file name. This ensures properly cache invalidation in sites using asset concatenation.
+
 ## v0.6.0
 
 - **Breaking**: Remove deprecated `autoregister`, `autoenqueue`, and `register_assets` methods.
