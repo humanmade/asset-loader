@@ -1,8 +1,12 @@
 # Changelog
 
-## 0.6.1
+## v0.6.2
 
 - Ensure that a version string is always set on an asset, even when the built file has a hash string in the file name. This ensures proper cache invalidation in sites using asset concatenation.
+
+## v0.6.1
+
+- Fix get_file_uri() when using symlinks
 
 ## v0.6.0
 
