@@ -68,40 +68,6 @@ composer test
 
 If the above commands do not work, ensure you have [Composer](https://getcomposer.org/) installed on your machine & run `composer install` from the project root.
 
-## Migrating from v0.3
-
-Prior to v0.4, the main public interface exposed by this package was a pair of methods named `autoenqueue` and `autoregister`. Internally these methods used a somewhat "magical" and inefficient method of filtering through asset resources. They are deprecated as of v0.4, and have since been fully removed.
-
-The following snippet of v0.3-compatible code using `autoenqueue` can be replaced fully with the `Asset_Loader\enqueue_asset()` example above.
-
-```php
-<?php
-namespace My_Plugin_Or_Theme;
-
-use Asset_Loader;
-
-add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_block_editor_assets' );
-
-/**
- * Enqueue the JS and CSS for blocks in the editor.
- *
- * @return void
- */
-function enqueue_block_editor_assets() {
-  Asset_Loader\autoenqueue(
-    // In a plugin, this would be `plugin_dir_path( __FILE__ )` or similar.
-    get_stylesheet_directory() . '/build/asset-manifest.json',
-    // The output filename of the Webpack build.
-    // At present this must be consistent between development & production builds.
-    'editor.js',
-    [
-      'scripts' => [ 'wp-element', 'wp-editor' ],
-      'handle'  => 'optional-manually-specified-script-handle',
-    ]
-  );
-}
-```
-
 ## License
 
 This plugin is free software. You can redistribute it and/or modify it under the terms of the [GNU General Public License](LICENSE) as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
