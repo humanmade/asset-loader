@@ -120,6 +120,14 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 	$handles = [];
 
 	if ( is_css( $asset_uri ) ) {
+		// Don't set runtime JS as dependency of a CSS file.
+		if ( isset( $runtime_handle ) ) {
+			$key = array_search( $runtime_handle, $options['dependencies'] );
+			if ( $key !== false ) {
+				unset( $options['dependencies'][ $key ] );
+			}
+		}
+
 		// Register a normal CSS bundle.
 		wp_register_style(
 			$asset_handle,
