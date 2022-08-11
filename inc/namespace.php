@@ -107,6 +107,15 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 	$asset_handle = $options['handle'] ?? $target_asset;
 	$asset_version = Manifest\get_version( $asset_uri, $manifest_path );
 
+	// If running the development build with runtimeChunk: single, a runtime file will be present in the manifest.
+	// Register this and ensure it is loaded only once per page.
+	$runtime = Manifest\get_manifest_resource( $manifest_path, 'runtime.js' );
+	if ( $runtime ) {
+		$runtime_handle = 'runtime-' . hash( 'crc32', $runtime ); // Ensure unique handle based on src.
+		wp_register_script( $runtime_handle, $runtime );
+		$options['dependencies'][] = $runtime_handle;
+	}
+
 	// Track registered handles so we can enqueue the correct assets later.
 	$handles = [];
 
