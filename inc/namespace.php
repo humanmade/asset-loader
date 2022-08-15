@@ -111,7 +111,7 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 	// file will be present in the manifest. Register this and ensure it is
 	// loaded only once per page.
 	$runtime = Manifest\get_manifest_resource( $manifest_path, 'runtime.js' );
-	if ( $runtime ) {
+	if ( $runtime && ! is_css( $asset_uri ) ) {
 		// Ensure unique handle based on src.
 		$runtime_handle = 'runtime-' . hash( 'crc32', $runtime );
 		wp_register_script( $runtime_handle, $runtime );
@@ -122,14 +122,6 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 	$handles = [];
 
 	if ( is_css( $asset_uri ) ) {
-		// Don't set runtime JS as dependency of a CSS file.
-		if ( isset( $runtime_handle ) ) {
-			$key = array_search( $runtime_handle, $options['dependencies'] );
-			if ( $key !== false ) {
-				unset( $options['dependencies'][ $key ] );
-			}
-		}
-
 		// Register a normal CSS bundle.
 		wp_register_style(
 			$asset_handle,
