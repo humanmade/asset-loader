@@ -112,7 +112,8 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 	// loaded only once per page.
 	$runtime = Manifest\get_manifest_resource( $manifest_path, 'runtime.js' );
 	if ( $runtime ) {
-		$runtime_handle = 'runtime-' . hash( 'crc32', $runtime ); // Ensure unique handle based on src.
+		// Ensure unique handle based on src.
+		$runtime_handle = 'runtime-' . hash( 'crc32', $runtime );
 		wp_register_script( $runtime_handle, $runtime );
 		$options['dependencies'][] = $runtime_handle;
 	}
