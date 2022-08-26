@@ -106,22 +106,25 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 	// Use the requested asset as the asset handle if no handle was provided.
 	$asset_handle = $options['handle'] ?? $target_asset;
 	$asset_version = Manifest\get_version( $asset_uri, $manifest_path );
+	$is_asset_css = is_css( $asset_uri ); // Note returns false for the CSS dev JS fallback.
+
 
 	// If running the development build with runtimeChunk: single, a runtime
 	// file will be present in the manifest. Register this and ensure it is
 	// loaded only once per page.
 	$runtime = Manifest\get_manifest_resource( $manifest_path, 'runtime.js' );
-	if ( $runtime && ! is_css( $asset_uri ) ) {
+	if ( $runtime && ! $is_asset_css ) {
 		// Ensure unique handle based on src.
 		$runtime_handle = 'runtime-' . hash( 'crc32', $runtime );
-		wp_register_script( $runtime_handle, $runtime );
-		$options['dependencies'][] = $runtime_handle;
+		if ( ! wp_script_is( $runtime_handle, 'registered' ) ) {
+			wp_register_script( $runtime_handle, $runtime );
+		}
 	}
 
 	// Track registered handles so we can enqueue the correct assets later.
 	$handles = [];
 
-	if ( is_css( $asset_uri ) ) {
+	if ( $is_asset_css ) {
 		// Register a normal CSS bundle.
 		wp_register_style(
 			$asset_handle,
@@ -163,6 +166,14 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 			$options['in-footer']
 		);
 		$handles['script'] = $asset_handle;
+	}
+
+	// Add dependency after registration to work around HM Asset loader not setting dependencies on JS fallback.
+	if ( $runtime && ! $is_asset_css ) {
+		$script = wp_scripts()->query( $asset_handle, 'registered' );
+		if ( $script && ! in_array( $runtime_handle, $script->deps, true ) ) {
+			$script->deps[] = $runtime_handle;
+		}
 	}
 
 	return $handles;
