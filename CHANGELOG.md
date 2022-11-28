@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.3
+
+ - Add support for composer installers v2
+
 ## v0.6.2
 
 - Ensure that a version string is always set on an asset, even when the built file has a hash string in the file name. This ensures proper cache invalidation in sites using asset concatenation.
