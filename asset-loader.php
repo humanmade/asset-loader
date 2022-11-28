@@ -13,7 +13,7 @@
  * Plugin Name: Asset Loader
  * Plugin URI:  https://github.com/humanmade/asset-loader
  * Description: Utilities to seamlessly consume Webpack-bundled assets in WordPress themes & plugins.
- * Version:     0.6.2
+ * Version:     0.6.3
  * Author:      K Adam White
  * Author URI:  http://kadamwhite.com
  * License:     GPL-2.0+
