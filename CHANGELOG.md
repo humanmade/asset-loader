@@ -2,7 +2,7 @@
 
 ## v0.6.3
 
- - Add support for composer installers v2
+- Adds support for the composer installers v2 package
 
 ## v0.6.2
 
