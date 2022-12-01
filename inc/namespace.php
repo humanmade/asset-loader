@@ -132,15 +132,14 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 			true
 		);
 		$handles['script'] = $asset_handle;
-		if ( ! empty( $options['dependencies'] ) ) {
-			wp_register_style(
-				$asset_handle,
-				false,
-				$options['dependencies'],
-				$asset_version
-			);
-			$handles['style'] = $asset_handle;
-		}
+
+		wp_register_style(
+			$asset_handle,
+			false,
+			$options['dependencies'],
+			$asset_version
+		);
+		$handles['style'] = $asset_handle;
 	} else {
 		// Register a normal JS bundle.
 		Admin\maybe_setup_ssl_cert_error_handling( $asset_uri );
