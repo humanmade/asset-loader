@@ -51,7 +51,7 @@ function enqueue_block_editor_assets() {
 
 ## Documentation
 
-For complete documentation, including contributing process, visit the ![docs site](https://humanmade.github.io/asset-loader/).
+For complete documentation, including contributing process, visit the [docs site](https://humanmade.github.io/asset-loader/).
 
 ## License
 
