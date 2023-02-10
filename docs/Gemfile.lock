@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/humanmade/just-the-hm-docs.git
+  revision: 07115607c8d441811d1fc49de89c2591d4029785
+  specs:
+    just-the-hm-docs (1.0.2.rc1)
+      jekyll (>= 4.3.2)
+      jekyll-seo-tag (>= 2.0)
+      rake (>= 12.3.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -38,10 +47,6 @@ GEM
       jekyll (>= 3.8, < 5.0)
     jekyll-watch (2.2.1)
       listen (~> 3.0)
-    just-the-hm-docs (1.0.1.rc1)
-      jekyll (>= 3.8.5)
-      jekyll-seo-tag (>= 2.0)
-      rake (>= 12.3.1)
     kramdown (2.4.0)
       rexml
     kramdown-parser-gfm (1.1.0)
@@ -75,8 +80,9 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  just-the-hm-docs (>= 1.0.1.rc1)
-  webrick (~> 1.7)
+  jekyll (~> 4.3.2)
+  just-the-hm-docs!
+  webrick (~> 1.8)
 
 BUNDLED WITH
    2.3.5
