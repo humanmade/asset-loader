@@ -36,7 +36,6 @@ jobs:
         run: |
           cd docs
           bundle install --jobs 4 --retry 3
-          bundle clean
       - name: Build with Jekyll
         run: |
           cd docs
