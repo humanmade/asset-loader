@@ -34,7 +34,8 @@ jobs:
         uses: actions/configure-pages@v2
       - name: Bundle install
         run: |
-          bundle install --path=vendor/bundle --jobs 4 --retry 3
+          bundle config set --local path 'vendor/bundle'
+          bundle install --jobs 4 --retry 3
           bundle clean
       - name: Build with Jekyll
         run: |
