@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.6.4
+
+- Point to specific commit for 3rd-party Github action
+- Secure href attribute in 404 page to prevent XSS vulnerabilities
+
 ## v0.6.3
 
 - Adds support for the composer installers v2 package
