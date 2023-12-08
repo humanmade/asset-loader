@@ -234,6 +234,9 @@
 		assignment in conditionals.
 		-->
 		<exclude name="WordPress.PHP.YodaConditions" />
+
+		<!-- Do not warn on function arguments named $resource. -->
+		<exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames.resourceFound" />
 	</rule>
 
 	<!-- Prefer alignment over line length. -->

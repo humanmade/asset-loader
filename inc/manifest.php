@@ -46,6 +46,7 @@ function load_asset_manifest( $path ) {
 	if ( ! is_readable( $path ) ) {
 		return null;
 	}
+	// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown -- Local file.
 	$contents = file_get_contents( $path );
 	if ( empty( $contents ) ) {
 		return null;

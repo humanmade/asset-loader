@@ -7,6 +7,8 @@ declare( strict_types=1 );
 
 namespace Asset_Loader\Tests;
 
+// phpcs:disable VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- Fully mirrors WP's class methods.
+
 class Mock_Asset_Registry {
 	/**
 	 * Dictionary of registered objects in this registry.
