@@ -16,7 +16,7 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 	 *
 	 * @dataProvider provide_get_manifest_resource_cases
 	 */
-	public function test_get_manifest_resource( string $manifest_path, string $resource, ?string $expected, string $message ) : void {
+	public function test_get_manifest_resource( string $manifest_path, string $resource, ?string $expected, string $message ): void {
 		$result = Manifest\get_manifest_resource( $manifest_path, $resource );
 		$this->assertEquals( $expected, $result, $message );
 	}
@@ -24,7 +24,7 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 	/**
 	 * Test cases for get_manifest_resource() utility function.
 	 */
-	public function provide_get_manifest_resource_cases() : array {
+	public function provide_get_manifest_resource_cases(): array {
 		$dev_manifest = dirname( __DIR__ ) . '/fixtures/devserver-asset-manifest.json';
 		$prod_manifest = dirname( __DIR__ ) . '/fixtures/prod-asset-manifest.json';
 		return [
@@ -84,7 +84,7 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 	 *
 	 * @dataProvider provide_get_version_cases
 	 */
-	public function test_get_version( string $asset_uri, string $manifest_path, ?string $expected, string $message ) : void {
+	public function test_get_version( string $asset_uri, string $manifest_path, ?string $expected, string $message ): void {
 		$version = Manifest\get_version( $asset_uri, $manifest_path );
 
 		$this->assertEquals( $expected, $version, $message );
@@ -93,7 +93,7 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 	/**
 	 * Test cases for get_version() utility function.
 	 */
-	public function provide_get_version_cases() : array {
+	public function provide_get_version_cases(): array {
 		return [
 			'hashed asset filename' => [
 				'main.03bfa96fd1c694ca18b3.js',
@@ -116,7 +116,7 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 		];
 	}
 
-	public function test_get_version_in_altis_environment() : void {
+	public function test_get_version_in_altis_environment(): void {
 		WP_Mock::userFunction( 'Altis\\get_environment_codebase_revision' )
 			->andReturn( 'spiffy-altis-deploy-revision' );
 
@@ -130,7 +130,7 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 	 *
 	 * @dataProvider provide_get_active_manifest_cases
 	 */
-	public function test_get_active_manifest( array $manifest_options, ?string $expected, string $message ) : void {
+	public function test_get_active_manifest( array $manifest_options, ?string $expected, string $message ): void {
 		$result = Manifest\get_active_manifest( $manifest_options );
 
 		$this->assertEquals( $expected, $result, $message );
@@ -139,7 +139,7 @@ class Test_Manifest extends Asset_Loader_Test_Case {
 	/**
 	 * Test cases for get_manifest_resource() utility function.
 	 */
-	public function provide_get_active_manifest_cases() : array {
+	public function provide_get_active_manifest_cases(): array {
 		$dev_manifest = dirname( __DIR__ ) . '/fixtures/devserver-asset-manifest.json';
 		$prod_manifest = dirname( __DIR__ ) . '/fixtures/prod-asset-manifest.json';
 		$invalid_manifest_1 = dirname( __DIR__ ) . '/fixtures/does-not-exist.json';

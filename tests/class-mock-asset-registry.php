@@ -38,7 +38,7 @@ class Mock_Asset_Registry {
 	 *                                          (scripts), or media (styles).
 	 * @return bool Whether the style has been registered. True on success, false on failure.
 	 */
-	public function register( string $handle, $asset_uri, array $dependencies, $version = null, $last_arg = false ) : bool {
+	public function register( string $handle, $asset_uri, array $dependencies, $version = null, $last_arg = false ): bool {
 		$this->registered[ $handle ] = (object) [];
 		$this->registered[ $handle ]->handle = $handle;
 		$this->registered[ $handle ]->src = $asset_uri;
@@ -53,7 +53,7 @@ class Mock_Asset_Registry {
 	 *
 	 * @param string $handle Name of the asset to enqueue. Should be unique.
 	 */
-	public function enqueue( string $handle ) : void {
+	public function enqueue( string $handle ): void {
 		$this->enqueued[ $handle ] = true;
 	}
 
@@ -62,7 +62,7 @@ class Mock_Asset_Registry {
 	 *
 	 * @return string[]
 	 */
-	public function get_enqueued() : array {
+	public function get_enqueued(): array {
 		return array_keys( $this->enqueued );
 	}
 
@@ -72,7 +72,7 @@ class Mock_Asset_Registry {
 	 * @param string $handle Handle of registered asset to return.
 	 * @return array|null
 	 */
-	public function get_registered( string $handle ) : ?array {
+	public function get_registered( string $handle ): ?array {
 		if ( isset( $this->registered[ $handle ] ) ) {
 			return (array) $this->registered[ $handle ];
 		}

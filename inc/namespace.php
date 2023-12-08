@@ -13,7 +13,7 @@ namespace Asset_Loader;
  * @param string $uri A URI to test for CSS-ness.
  * @return boolean Whether that URI points to a CSS file.
  */
-function is_css( string $uri ) : bool {
+function is_css( string $uri ): bool {
 	return preg_match( '/\.css(\?.*)?$/', $uri ) === 1;
 }
 
@@ -29,7 +29,7 @@ function is_css( string $uri ) : bool {
  * @param boolean             $in_footer    Whether to load this script in footer.
  * @return string
  */
-function _register_or_update_script( string $handle, string $asset_uri, array $dependencies, $version = false, $in_footer = true ) : ?string {
+function _register_or_update_script( string $handle, string $asset_uri, array $dependencies, $version = false, $in_footer = true ): ?string {
 	// Handle the case where a `register_asset( 'foo.css' )` call falls back to
 	// enqueue the dev bundle's JS. Since the dependencies provided in that CSS-
 	// specific registration call would not apply to the world of scripts, but
@@ -67,7 +67,7 @@ function _register_or_update_script( string $handle, string $asset_uri, array $d
  * }
  * @return array Array detailing which script and/or style handles got registered.
  */
-function register_asset( string $manifest_path, string $target_asset, array $options = [] ) : array {
+function register_asset( string $manifest_path, string $target_asset, array $options = [] ): array {
 	$defaults = [
 		'dependencies' => [],
 		'in-footer' => true,
@@ -167,7 +167,7 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
  *     @type array  $dependencies Script or Style dependencies. Optional.
  * }
  */
-function enqueue_asset( string $manifest_path, string $target_asset, array $options = [] ) : void {
+function enqueue_asset( string $manifest_path, string $target_asset, array $options = [] ): void {
 	$registered_handles = register_asset( $manifest_path, $target_asset, $options );
 
 	if ( isset( $registered_handles['script'] ) ) {
