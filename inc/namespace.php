@@ -59,15 +59,20 @@ function _register_or_update_script( string $handle, string $asset_uri, array $d
 /**
  * Attempt to register a particular script bundle from a manifest.
  *
- * @param string $manifest_path File system path for an asset manifest JSON file.
- * @param string $target_asset  Asset to retrieve within the specified manifest.
- * @param array  $options {
+ * @param ?string $manifest_path File system path for an asset manifest JSON file.
+ * @param string  $target_asset  Asset to retrieve within the specified manifest.
+ * @param array   $options {
  *     @type string $handle       Handle to use when enqueuing the asset. Optional.
  *     @type array  $dependencies Script or Style dependencies. Optional.
  * }
  * @return array Array detailing which script and/or style handles got registered.
  */
-function register_asset( string $manifest_path, string $target_asset, array $options = [] ) : array {
+function register_asset( ?string $manifest_path, string $target_asset, array $options = [] ) : array {
+	if ( empty( $manifest_path ) ) {
+		trigger_error( "No manifest specified when loading $target_asset", E_USER_NOTICE );
+		return [];
+	}
+
 	$defaults = [
 		'dependencies' => [],
 		'in-footer' => true,
@@ -160,14 +165,14 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 /**
  * Register and immediately enqueue a particular asset within a manifest.
  *
- * @param string $manifest_path File system path for an asset manifest JSON file.
- * @param string $target_asset  Asset to retrieve within the specified manifest.
- * @param array  $options {
+ * @param ?string $manifest_path File system path for an asset manifest JSON file.
+ * @param string  $target_asset  Asset to retrieve within the specified manifest.
+ * @param array   $options {
  *     @type string $handle       Handle to use when enqueuing the asset. Optional.
  *     @type array  $dependencies Script or Style dependencies. Optional.
  * }
  */
-function enqueue_asset( string $manifest_path, string $target_asset, array $options = [] ) : void {
+function enqueue_asset( ?string $manifest_path, string $target_asset, array $options = [] ) : void {
 	$registered_handles = register_asset( $manifest_path, $target_asset, $options );
 
 	if ( isset( $registered_handles['script'] ) ) {
