@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+- Drop support for PHP 7 and below
+
 ## v0.6.4
 
 - Point to specific commit for 3rd-party Github action
