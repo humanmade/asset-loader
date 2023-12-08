@@ -69,7 +69,7 @@ function _register_or_update_script( string $handle, string $asset_uri, array $d
  */
 function register_asset( ?string $manifest_path, string $target_asset, array $options = [] ): array {
 	if ( empty( $manifest_path ) ) {
-		trigger_error( "No manifest specified when loading $target_asset", E_USER_NOTICE );
+		trigger_error( sprintf( 'No manifest specified when loading %', esc_attr( $target_asset ) ), E_USER_NOTICE );
 		return [];
 	}
 
