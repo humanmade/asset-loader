@@ -1,5 +1,11 @@
 # Changelog
 
+## Next
+
+- Fix bug where passing an empty manifest to `enqueue_asset` or `register_asset` would fail with a TypeError.
+- **Breaking**: Minimum supported PHP version is now PHP 8.1.
+  - Plugin should continue to work on 7.4 but there is no support guarantee, and the plugin's development tooling now requires at least 8.0.
+
 ## v0.6.4
 
 - Point to specific commit for 3rd-party Github action

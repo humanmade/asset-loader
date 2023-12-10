@@ -40,7 +40,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 */
 	private $dev_manifest;
 
-	public function setUp() : void {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->prod_manifest = dirname( __DIR__ ) . '/fixtures/prod-asset-manifest.json';
@@ -70,7 +70,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 			->andReturn( dirname( __DIR__ ) );
 
 		WP_Mock::userFunction( 'get_theme_file_uri' )
-			->andReturnUsing( function( string $path ) {
+			->andReturnUsing( function ( string $path ) {
 				return 'https://my.theme/uri/' . $path;
 			} );
 
@@ -115,7 +115,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 *
 	 * @dataProvider provide_script_asset_cases
 	 */
-	public function test_register_script( string $manifest, string $resource, array $options, array $expected ) : void {
+	public function test_register_script( string $manifest, string $resource, array $options, array $expected ): void {
 		Asset_Loader\register_asset( $this->{$manifest}, $resource, $options );
 
 		$this->assertEquals( $expected, $this->scripts->get_registered( $expected['handle'] ) );
@@ -126,7 +126,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 *
 	 * @dataProvider provide_script_asset_cases
 	 */
-	public function test_enqueue_script( string $manifest, string $resource, array $options, array $expected ) : void {
+	public function test_enqueue_script( string $manifest, string $resource, array $options, array $expected ): void {
 		Asset_Loader\enqueue_asset( $this->{$manifest}, $resource, $options );
 
 		$this->assertEquals( $expected, $this->scripts->get_registered( $expected['handle'] ) );
@@ -138,7 +138,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	/**
 	 * Script test cases for register_asset and enqueue_asset.
 	 */
-	public function provide_script_asset_cases() : array {
+	public function provide_script_asset_cases(): array {
 		return [
 			'production script' => [
 				'prod_manifest',
@@ -176,7 +176,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 *
 	 * @dataProvider provide_style_asset_cases
 	 */
-	public function test_register_style( string $manifest, string $resource, array $options, array $expected ) : void {
+	public function test_register_style( string $manifest, string $resource, array $options, array $expected ): void {
 		Asset_Loader\register_asset( $this->{$manifest}, $resource, $options );
 
 		$this->assertEquals( $expected, $this->styles->get_registered( $expected['handle'] ) );
@@ -187,7 +187,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 *
 	 * @dataProvider provide_style_asset_cases
 	 */
-	public function test_enqueue_style( string $manifest, string $resource, array $options, array $expected ) : void {
+	public function test_enqueue_style( string $manifest, string $resource, array $options, array $expected ): void {
 		Asset_Loader\enqueue_asset( $this->{$manifest}, $resource, $options );
 
 		$this->assertEquals( $expected, $this->styles->get_registered( $expected['handle'] ) );
@@ -199,7 +199,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	/**
 	 * Stylesheet test cases for register_asset and enqueue_asset.
 	 */
-	public function provide_style_asset_cases() : array {
+	public function provide_style_asset_cases(): array {
 		return [
 			'production stylesheet' => [
 				'prod_manifest',
@@ -242,7 +242,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 		];
 	}
 
-	public function test_register_dev_stylesheet() : void {
+	public function test_register_dev_stylesheet(): void {
 		Asset_Loader\register_asset(
 			$this->dev_manifest,
 			'frontend-styles.css',
@@ -262,7 +262,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 		$this->assertEquals( [], $this->styles->registered );
 	}
 
-	public function test_enqueue_dev_stylesheet() : void {
+	public function test_enqueue_dev_stylesheet(): void {
 		Asset_Loader\enqueue_asset(
 			$this->dev_manifest,
 			'frontend-styles.css',
@@ -284,7 +284,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 		$this->assertEquals( [ 'frontend-styles' ], $this->scripts->get_enqueued() );
 	}
 
-	public function test_register_dev_stylesheet_with_dependencies() : void {
+	public function test_register_dev_stylesheet_with_dependencies(): void {
 		Asset_Loader\register_asset(
 			$this->dev_manifest,
 			'frontend-styles.css',
@@ -313,7 +313,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 		);
 	}
 
-	public function test_enqueue_dev_stylesheet_with_dependencies() : void {
+	public function test_enqueue_dev_stylesheet_with_dependencies(): void {
 		Asset_Loader\enqueue_asset(
 			$this->dev_manifest,
 			'frontend-styles.css',
@@ -345,7 +345,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 		$this->assertEquals( [ 'frontend-styles' ], $this->styles->get_enqueued() );
 	}
 
-	public function test_register_dev_stylesheet_then_corresponding_dev_script() : void {
+	public function test_register_dev_stylesheet_then_corresponding_dev_script(): void {
 		Asset_Loader\register_asset(
 			$this->dev_manifest,
 			'editor.css',
@@ -382,7 +382,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 		);
 	}
 
-	public function test_enqueue_dev_stylesheet_then_corresponding_dev_script() : void {
+	public function test_enqueue_dev_stylesheet_then_corresponding_dev_script(): void {
 		Asset_Loader\enqueue_asset(
 			$this->dev_manifest,
 			'editor.css',

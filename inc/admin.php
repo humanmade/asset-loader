@@ -12,7 +12,7 @@ namespace Asset_Loader\Admin;
  *
  * @return string Regular expression pattern matching https://localhost.
  */
-function get_localhost_pattern() : string {
+function get_localhost_pattern(): string {
 	return '#https://(localhost|127.0.0.1)#';
 }
 
@@ -24,7 +24,7 @@ function get_localhost_pattern() : string {
  * @param string $script_uri URI of a script to be loaded.
  * @return void
  */
-function maybe_setup_ssl_cert_error_handling( $script_uri ) : void {
+function maybe_setup_ssl_cert_error_handling( $script_uri ): void {
 	static $error_handling_enabled = false;
 	if ( $error_handling_enabled ) {
 		// We have already set up the error handling script; no further action needed.
@@ -57,7 +57,7 @@ function maybe_setup_ssl_cert_error_handling( $script_uri ) : void {
  * @param string $src    The src URI of the JavaScript file this script loads.
  * @return string The script tag HTML, conditionally transformed.
  */
-function add_onerror_to_localhost_scripts( string $tag, string $handle, string $src ) : string {
+function add_onerror_to_localhost_scripts( string $tag, string $handle, string $src ): string {
 	if ( ! preg_match( get_localhost_pattern(), $src ) ) {
 		return $tag;
 	}
@@ -77,7 +77,7 @@ function add_onerror_to_localhost_scripts( string $tag, string $handle, string $
  *
  * @return void
  */
-function render_localhost_error_detection_script() : void {
+function render_localhost_error_detection_script(): void {
 	?>
 <script>
 ( function() {

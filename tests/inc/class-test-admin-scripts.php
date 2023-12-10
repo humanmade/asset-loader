@@ -16,7 +16,7 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	 *
 	 * @dataProvider provide_maybe_setup_ssl_cert_error_handling_cases
 	 */
-	public function test_maybe_setup_ssl_cert_error_handling( bool $is_admin, string $script_uri, bool $expect_action, string $message ) : void {
+	public function test_maybe_setup_ssl_cert_error_handling( bool $is_admin, string $script_uri, bool $expect_action, string $message ): void {
 		WP_Mock::userFunction( 'is_admin' )->andReturn( $is_admin );
 		if ( $expect_action ) {
 			WP_Mock::expectActionAdded( 'admin_head', 'Asset_Loader\\Admin\\render_localhost_error_detection_script', 5 );
@@ -31,7 +31,7 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	/**
 	 * Test cases for maybe_set_ssl_cert_error_handling().
 	 */
-	public function provide_maybe_setup_ssl_cert_error_handling_cases() : array {
+	public function provide_maybe_setup_ssl_cert_error_handling_cases(): array {
 		return [
 			'non-admin script' => [
 				false,
@@ -73,7 +73,7 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	 * @dataProvider provide_positive_script_filter_cases
 	 * @dataProvider provide_negative_script_filter_cases
 	 */
-	public function test_add_onerror_to_localhost_scripts( string $script_tag, string $src, string $expected_script_tag, string $message ) : void {
+	public function test_add_onerror_to_localhost_scripts( string $script_tag, string $src, string $expected_script_tag, string $message ): void {
 		$filtered_tag = Admin\add_onerror_to_localhost_scripts( $script_tag, 'handle does not matter', $src );
 		$this->assertEquals( $expected_script_tag, $filtered_tag, $message );
 	}
@@ -81,7 +81,7 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	/**
 	 * Test cases for filtering tags with add_onerror_to_localhost_scripts().
 	 */
-	public function provide_positive_script_filter_cases() : array {
+	public function provide_positive_script_filter_cases(): array {
 		return [
 			'filter localhost URL' => [
 				'<script />',
@@ -107,7 +107,7 @@ class Test_Admin_Scripts extends Asset_Loader_Test_Case {
 	/**
 	 * Test cases where add_onerror_to_localhost_scripts() should have no effect.
 	 */
-	public function provide_negative_script_filter_cases() : array {
+	public function provide_negative_script_filter_cases(): array {
 		return [
 			'no filtering of non-HTTPS URIs' => [
 				'<script />',

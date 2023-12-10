@@ -17,19 +17,19 @@ class Test_Paths extends Asset_Loader_Test_Case {
 	 *
 	 * @dataProvider provide_get_file_uri_cases
 	 */
-	public function test_get_file_uri( string $path, string $expected_uri, string $message ) : void {
+	public function test_get_file_uri( string $path, string $expected_uri, string $message ): void {
 		WP_Mock::userFunction( 'get_stylesheet_directory' )
 			->andReturn( '/root/content/themes/child' );
 		WP_Mock::userFunction( 'get_template_directory' )
 			->andReturn( '/root/content/themes/parent' );
 		WP_Mock::userFunction( 'get_theme_file_uri' )
-			->andReturnUsing( function( string $theme_relative_path ) : string {
+			->andReturnUsing( function ( string $theme_relative_path ): string {
 				// Do not bother distinguishing parent & child theme URIs in this test:
 				// Trust that WP's get_theme_file_uri() works as advertised.
 				return 'https://example.com/content/theme/' . $theme_relative_path;
 			} );
 		WP_Mock::userFunction( 'content_url' )
-			->andReturnUsing( function( string $path ) : string {
+			->andReturnUsing( function ( string $path ): string {
 				return 'https://example.com/content/' . $path;
 			} );
 
@@ -40,7 +40,7 @@ class Test_Paths extends Asset_Loader_Test_Case {
 	/**
 	 * Test cases for get_file_uri().
 	 */
-	public function provide_get_file_uri_cases() : array {
+	public function provide_get_file_uri_cases(): array {
 		return [
 			'theme resource' => [
 				'/root/content/themes/child/child-file.js',

@@ -19,7 +19,7 @@ use Altis;
  * @param string[] $paths Array of potential paths to manifest files.
  * @return string|null The first readable manifest path, or null.
  */
-function get_active_manifest( array $paths ) : ?string {
+function get_active_manifest( array $paths ): ?string {
 	foreach ( $paths as $path ) {
 		if ( is_readable( $path ) ) {
 			return $path;
@@ -46,6 +46,7 @@ function load_asset_manifest( $path ) {
 	if ( empty( $path ) || ! is_readable( $path ) ) {
 		return null;
 	}
+	// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown -- Local file.
 	$contents = file_get_contents( $path );
 	if ( empty( $contents ) ) {
 		return null;
@@ -88,7 +89,7 @@ function get_assets_list( string $manifest_path ) {
  *
  * @return string|null
  */
-function get_manifest_resource( string $manifest_path, string $asset ) : ?string {
+function get_manifest_resource( string $manifest_path, string $asset ): ?string {
 	$dev_assets = load_asset_manifest( $manifest_path );
 
 	return $dev_assets[ $asset ] ?? null;
@@ -107,7 +108,7 @@ function get_manifest_resource( string $manifest_path, string $asset ) : ?string
  * @return string|null A unique revision string, or else null if asset versioning
  * is not possible or is determined not to be needed.
  */
-function get_version( string $asset_uri, string $manifest_path ) : ?string {
+function get_version( string $asset_uri, string $manifest_path ): ?string {
 	// Guess whether the provided asset URI is already uniquely hashed using the
 	// heuristic of "contains a 16-character-or-more substring made up of nothing
 	// but numbers and the letters a through f", which matches most common hash

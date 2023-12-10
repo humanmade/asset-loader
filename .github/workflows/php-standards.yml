@@ -1,0 +1,67 @@
+name: PHP Standards
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - '**.php'
+      - '**.json'
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '**.php'
+      - '**.json'
+
+jobs:
+  build:
+    name: PHP Coding Standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@e6f75134d35752277f093989e72e140eaa222f35 # v2.28.0
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: Echo PHP & Composer versions
+        run: |
+          php --version
+          php -m
+          composer --version
+
+      - name: Get Composer Cache Directory
+        id: composer-cache-dir
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache PHP Dependencies
+        id: composer-cache
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ${{ steps.composer-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-composer-7.2-${{ hashFiles('composer.lock') }}
+
+      - name: Install PHP Dependencies
+        run: |
+          composer install --prefer-dist --no-progress --no-suggest --no-interaction
+
+      - name: PHPCS cache
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: tests/cache
+          key: ${{ runner.os }}-phpcs-7.2-${{ hashFiles('plugin.php') }}
+
+      - name: Check the code for style issues
+        run: |
+          composer lint
+
+      - name: Run the tests
+        run: |
+          composer test
+        env:
+          MYSQL_DATABASE: wordpress
+          WP_TESTS_DB_PASS: root

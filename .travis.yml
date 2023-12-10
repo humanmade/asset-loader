@@ -1,4 +1,5 @@
 # Travis CI Configuration File
+dist: jammy
 
 branches:
   only:
@@ -8,9 +9,8 @@ branches:
 language: php
 
 php:
-  - 7.2
-  - 7.3
-  - 7.4
+  - 8.1
+  - 8.2
 
 install: composer install
 

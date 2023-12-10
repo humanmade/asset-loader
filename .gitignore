@@ -1,3 +1,4 @@
 vendor/
 docs/_site/
 .bundle
+.phpunit.result.cache
