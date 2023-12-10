@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## v0.7.0
 
 - Fix bug where passing an empty manifest to `enqueue_asset` or `register_asset` would fail with a TypeError.
 - **Breaking**: Minimum supported PHP version is now PHP 8.1.
