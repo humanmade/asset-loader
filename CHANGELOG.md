@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.1
+
+- Fix invalid `sprintf` string token in manifest loading error message so that a missing manifest does not cause a fatal.
+
 ## v0.7.0
 
 - Fix bug where passing an empty manifest to `enqueue_asset` or `register_asset` would fail with a TypeError.
