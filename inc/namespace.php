@@ -30,12 +30,12 @@ function is_css( string $uri ): bool {
  * @return string
  */
 function _register_or_update_script( string $handle, string $asset_uri, array $dependencies, $version = false, $in_footer = true ): ?string {
-	// Handle the case where a `register_asset( 'foo.css' )` call falls back to
+	// Handle the case where a `register_manifest_asset( 'foo.css' )` call falls back to
 	// enqueue the dev bundle's JS. Since the dependencies provided in that CSS-
 	// specific registration call would not apply to the world of scripts, but
 	// a script asset would still get registered, we may need to update that new
 	// script's registration to reflect an actual list of JS dependencies if we
-	// later called `register_asset( 'foo.js' )`.
+	// later called `register_manifest_asset( 'foo.js' )`.
 	if ( ! empty( $dependencies ) ) {
 		$existing_scripts = wp_scripts();
 		if ( isset( $existing_scripts->registered[ $handle ]->deps ) ) {
@@ -67,7 +67,7 @@ function _register_or_update_script( string $handle, string $asset_uri, array $d
  * }
  * @return array Array detailing which script and/or style handles got registered.
  */
-function register_asset( ?string $manifest_path, string $target_asset, array $options = [] ): array {
+function register_manifest_asset( ?string $manifest_path, string $target_asset, array $options = [] ): array {
 	if ( empty( $manifest_path ) ) {
 		trigger_error( sprintf( 'No manifest specified when loading %s', esc_attr( $target_asset ) ), E_USER_NOTICE );
 		return [];
@@ -162,6 +162,25 @@ function register_asset( ?string $manifest_path, string $target_asset, array $op
 	return $handles;
 }
 
+
+/**
+ * Attempt to register a particular script bundle from a manifest.
+ *
+ * @deprecated 0.8.0 Use register_manifest_asset().
+ *
+ * @param ?string $manifest_path File system path for an asset manifest JSON file.
+ * @param string  $target_asset  Asset to retrieve within the specified manifest.
+ * @param array   $options {
+ *     @type string $handle       Handle to use when enqueuing the asset. Optional.
+ *     @type array  $dependencies Script or Style dependencies. Optional.
+ * }
+ * @return array Array detailing which script and/or style handles got registered.
+ */
+function register_asset( ?string $manifest_path, string $target_asset, array $options = [] ): array {
+	_deprecated_function( __FUNCTION__, '0.8.0', 'register_manifest_asset' );
+	return register_manifest_asset( $manifest_path, $target_asset, $options );
+}
+
 /**
  * Register and immediately enqueue a particular asset within a manifest.
  *
@@ -172,8 +191,8 @@ function register_asset( ?string $manifest_path, string $target_asset, array $op
  *     @type array  $dependencies Script or Style dependencies. Optional.
  * }
  */
-function enqueue_asset( ?string $manifest_path, string $target_asset, array $options = [] ): void {
-	$registered_handles = register_asset( $manifest_path, $target_asset, $options );
+function enqueue_manifest_asset( ?string $manifest_path, string $target_asset, array $options = [] ): void {
+	$registered_handles = register_manifest_asset( $manifest_path, $target_asset, $options );
 
 	if ( isset( $registered_handles['script'] ) ) {
 		wp_enqueue_script( $registered_handles['script'] );
@@ -181,4 +200,22 @@ function enqueue_asset( ?string $manifest_path, string $target_asset, array $opt
 	if ( isset( $registered_handles['style'] ) ) {
 		wp_enqueue_style( $registered_handles['style'] );
 	}
+}
+
+
+/**
+ * Attempt to enqueue a particular script bundle from a manifest.
+ *
+ * @deprecated 0.8.0 Use enqueue_manifest_asset().
+ *
+ * @param ?string $manifest_path File system path for an asset manifest JSON file.
+ * @param string  $target_asset  Asset to retrieve within the specified manifest.
+ * @param array   $options {
+ *     @type string $handle       Handle to use when enqueuing the asset. Optional.
+ *     @type array  $dependencies Script or Style dependencies. Optional.
+ * }
+ */
+function enqueue_asset( ?string $manifest_path, string $target_asset, array $options = [] ): void {
+	_deprecated_function( __FUNCTION__, '0.8.0', 'enqueue_manifest_asset' );
+	enqueue_manifest_asset( $manifest_path, $target_asset, $options );
 }
