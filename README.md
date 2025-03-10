@@ -8,7 +8,7 @@ This plugin exposes functions which may be used within other WordPress themes or
 
 This library is designed to work in conjunction with a Webpack configuration (such as those created with the presets in [@humanmade/webpack-helpers](https://github.com/humanmade/webpack-helpers)) which generate an asset manifest file. This manifest associates asset bundle names with either URIs pointing to asset bundles on a running DevServer instance, or else local file paths on disk.
 
-`Asset_Loader` provides a set of methods for reading in this manifest file and registering a specific resource within it to load within your WordPress website. The primary public interface provided by this plugin is a pair of methods, `Asset_Loader\register_asset()` and `Asset_Loader\enqueue_asset()`. To register a manifest asset call one of these methods inside actions like `wp_enqueue_scripts` or `enqueue_block_editor_assets`, in the same manner you would have called the standard WordPress `wp_register_script` or `wp_enqueue_style` functions.
+`Asset_Loader` provides a set of methods for reading in this manifest file and registering a specific resource within it to load within your WordPress website. The primary public interface provided by this plugin is a pair of methods, `Asset_Loader\register_manifest_asset()` and `Asset_Loader\enqueue_manifest_asset()`. To register a manifest asset call one of these methods inside actions like `wp_enqueue_scripts` or `enqueue_block_editor_assets`, in the same manner you would have called the standard WordPress `wp_register_script` or `wp_enqueue_style` functions.
 
 ```php
 <?php
@@ -24,7 +24,7 @@ add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_block_edit
  * @return void
  */
 function enqueue_block_editor_assets() {
-  Asset_Loader\enqueue_asset(
+  Asset_Loader\enqueue_manifest_asset(
     // In a plugin, this would be `plugin_dir_path( __FILE__ )` or similar.
     get_stylesheet_directory() . '/build/asset-manifest.json',
     // The handle of a resource within the manifest. For static file fallbacks,
@@ -36,7 +36,7 @@ function enqueue_block_editor_assets() {
     ]
   );
 
-  Asset_Loader\enqueue_asset(
+  Asset_Loader\enqueue_manifest_asset(
     // In a plugin, this would be `plugin_dir_path( __FILE__ )` or similar.
     get_stylesheet_directory() . '/build/asset-manifest.json',
     // Enqueue CSS for the editor.
