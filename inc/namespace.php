@@ -107,8 +107,6 @@ function register_asset( string $manifest_path, string $target_asset, array $opt
 	$asset_handle = $options['handle'] ?? $target_asset;
 	$asset_version = Manifest\get_version( $asset_uri, $manifest_path );
 	$is_asset_css = is_css( $asset_uri ); // Note returns false for the CSS dev JS fallback.
-
-
 	// If running the development build with runtimeChunk: single, a runtime
 	// file will be present in the manifest. Register this and ensure it is
 	// loaded only once per page.
