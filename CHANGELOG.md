@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.0
+
+- Deprecate `register_asset` and `enqueue_asset` functions, renamed to `register_manifest_asset` and `enqueue_manifest_asset` respectively.
+
 ## v0.7.1
 
 - Fix invalid `sprintf` string token in manifest loading error message so that a missing manifest does not cause a fatal.
