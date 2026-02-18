@@ -40,11 +40,19 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 */
 	private $dev_manifest;
 
+	/**
+	 * String path to a manifest file that does not exist on disk.
+	 *
+	 * @var string
+	 */
+	private $missing_manifest;
+
 	public function setUp(): void {
 		parent::setUp();
 
 		$this->prod_manifest = dirname( __DIR__ ) . '/fixtures/prod-asset-manifest.json';
 		$this->dev_manifest = dirname( __DIR__ ) . '/fixtures/devserver-asset-manifest.json';
+		$this->missing_manifest = dirname( __DIR__ ) . '/fixtures/nonexistent-manifest.json';
 
 		// Set up mock script & style registries, and mock the behavior of WP's
 		// enqueuing and registration functions.
@@ -420,5 +428,53 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 
 		$this->assertEquals( [ 'editor' ], $this->scripts->get_enqueued() );
 		$this->assertEquals( [ 'editor' ], $this->styles->get_enqueued() );
+	}
+
+	/**
+	 * Test register_manifest_asset() with an array of manifest paths.
+	 */
+	public function test_register_asset_with_manifest_array_uses_first_readable_manifest(): void {
+		Asset_Loader\register_manifest_asset(
+			[ $this->dev_manifest, $this->prod_manifest ],
+			'editor.js',
+			[
+				'handle' => 'editor-bundle',
+				'dependencies' => [ 'wp-data' ],
+			]
+		);
+
+		$this->assertEquals(
+			[
+				'handle' => 'editor-bundle',
+				'src'    => 'https://localhost:9090/build/editor.js',
+				'deps'   => [ 'wp-data' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
+			],
+			$this->scripts->get_registered( 'editor-bundle' )
+		);
+	}
+
+	/**
+	 * Test register_manifest_asset() with an array of manifest paths.
+	 */
+	public function test_register_asset_with_manifest_array_skips_unreadable_manifests(): void {
+		Asset_Loader\register_manifest_asset(
+			[ $this->missing_manifest, $this->prod_manifest ],
+			'editor.js',
+			[
+				'handle'       => 'editor-bundle',
+				'dependencies' => [ 'wp-element' ],
+			],
+		);
+
+		$this->assertEquals(
+			[
+				'handle' => 'editor-bundle',
+				'src'    => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
+				'deps'   => [ 'wp-element' ],
+				'ver'    => '03bfa96fd1c694ca18b3',
+			],
+			$this->scripts->get_registered( 'editor-bundle' )
+		);
 	}
 }
