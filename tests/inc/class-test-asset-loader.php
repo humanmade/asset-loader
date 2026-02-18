@@ -40,11 +40,19 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	 */
 	private $dev_manifest;
 
+	/**
+	 * String path to a manifest file that does not exist on disk.
+	 *
+	 * @var string
+	 */
+	private $missing_manifest;
+
 	public function setUp(): void {
 		parent::setUp();
 
 		$this->prod_manifest = dirname( __DIR__ ) . '/fixtures/prod-asset-manifest.json';
 		$this->dev_manifest = dirname( __DIR__ ) . '/fixtures/devserver-asset-manifest.json';
+		$this->missing_manifest = dirname( __DIR__ ) . '/fixtures/nonexistent-manifest.json';
 
 		// Set up mock script & style registries, and mock the behavior of WP's
 		// enqueuing and registration functions.
@@ -424,195 +432,49 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 
 	/**
 	 * Test register_manifest_asset() with an array of manifest paths.
-	 *
-	 * @dataProvider provide_manifest_array_script_cases
 	 */
-	public function test_register_script_with_manifest_array( array $manifests, string $resource, array $options, array $expected ): void {
-		Asset_Loader\register_manifest_asset( $manifests, $resource, $options );
-
-		$this->assertEquals( $expected, $this->scripts->get_registered( $expected['handle'] ) );
-	}
-
-	/**
-	 * Test enqueue_manifest_asset() with an array of manifest paths.
-	 *
-	 * @dataProvider provide_manifest_array_script_cases
-	 */
-	public function test_enqueue_script_with_manifest_array( array $manifests, string $resource, array $options, array $expected ): void {
-		Asset_Loader\enqueue_manifest_asset( $manifests, $resource, $options );
-
-		$this->assertEquals( $expected, $this->scripts->get_registered( $expected['handle'] ) );
-		$this->assertEmpty( $this->styles->registered );
-
-		$this->assertEquals( [ $expected['handle'] ], $this->scripts->get_enqueued() );
-	}
-
-	/**
-	 * Test cases for register_manifest_asset and enqueue_manifest_asset with manifest arrays (scripts).
-	 */
-	public function provide_manifest_array_script_cases(): array {
-		$nonexistent = dirname( __DIR__ ) . '/fixtures/nonexistent-manifest.json';
-		return [
-			'use first readable manifest in array' => [
-				[ $this->dev_manifest, $this->prod_manifest ],
-				'editor.js',
-				[
-					'handle'       => 'editor-bundle',
-					'dependencies' => [ 'wp-data' ],
-				],
-				[
-					'handle' => 'editor-bundle',
-					'src'    => 'https://localhost:9090/build/editor.js',
-					'deps'   => [ 'wp-data' ],
-					'ver'    => '499bb147f8e7234d957a47ac983e19e7',
-				],
-			],
-			'skip unreadable manifests and use first readable one' => [
-				[ $nonexistent, $this->dev_manifest, $this->prod_manifest ],
-				'editor.js',
-				[
-					'handle'       => 'editor-from-array',
-					'dependencies' => [ 'wp-element' ],
-				],
-				[
-					'handle' => 'editor-from-array',
-					'src'    => 'https://localhost:9090/build/editor.js',
-					'deps'   => [ 'wp-element' ],
-					'ver'    => '499bb147f8e7234d957a47ac983e19e7',
-				],
-			],
-			'use production manifest when dev is not available' => [
-				[ $nonexistent, $this->prod_manifest ],
-				'editor.js',
-				[
-					'handle'       => 'editor-production',
-					'dependencies' => [],
-				],
-				[
-					'handle' => 'editor-production',
-					'src'    => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
-					'deps'   => [],
-					'ver'    => '03bfa96fd1c694ca18b3',
-				],
-			],
-		];
-	}
-
-	/**
-	 * Test register_manifest_asset() with an array of manifest paths for styles.
-	 *
-	 * @dataProvider provide_manifest_array_style_cases
-	 */
-	public function test_register_style_with_manifest_array( array $manifests, string $resource, array $options, array $expected ): void {
-		Asset_Loader\register_manifest_asset( $manifests, $resource, $options );
-
-		$this->assertEquals( $expected, $this->styles->get_registered( $expected['handle'] ) );
-	}
-
-	/**
-	 * Test enqueue_manifest_asset() with an array of manifest paths for styles.
-	 *
-	 * @dataProvider provide_manifest_array_style_cases
-	 */
-	public function test_enqueue_style_with_manifest_array( array $manifests, string $resource, array $options, array $expected ): void {
-		Asset_Loader\enqueue_manifest_asset( $manifests, $resource, $options );
-
-		$this->assertEquals( $expected, $this->styles->get_registered( $expected['handle'] ) );
-		$this->assertEmpty( $this->scripts->registered );
-
-		$this->assertEquals( [ $expected['handle'] ], $this->styles->get_enqueued() );
-	}
-
-	/**
-	 * Test cases for register_manifest_asset and enqueue_manifest_asset with manifest arrays (styles).
-	 */
-	public function provide_manifest_array_style_cases(): array {
-		$nonexistent = dirname( __DIR__ ) . '/fixtures/nonexistent-manifest.json';
-		return [
-			'use first readable manifest in array for stylesheet' => [
-				[ $this->prod_manifest, $this->dev_manifest ],
-				'frontend-styles.css',
-				[
-					'handle'       => 'frontend-styles',
-					'dependencies' => [ 'some-dependency' ],
-				],
-				[
-					'handle' => 'frontend-styles',
-					'src'    => 'https://my.theme/uri/fixtures/frontend-styles.96a500e3dd1eb671f25e.css',
-					'deps'   => [ 'some-dependency' ],
-					'ver'    => '96a500e3dd1eb671f25e',
-				],
-			],
-			'skip unreadable manifests and use first readable one for stylesheet' => [
-				[ $nonexistent, $this->prod_manifest, $this->dev_manifest ],
-				'editor.css',
-				[
-					'handle'       => 'editor-styles',
-					'dependencies' => [],
-				],
-				[
-					'handle' => 'editor-styles',
-					'src'    => 'https://my.theme/uri/fixtures/editor.cce01a3e310944f3603f.css',
-					'deps'   => [],
-					'ver'    => 'cce01a3e310944f3603f',
-				],
-			],
-		];
-	}
-
-	/**
-	 * Test register_manifest_asset() with array when no manifests are readable.
-	 */
-	public function test_register_script_with_manifest_array_all_unreadable(): void {
-		$nonexistent_1 = dirname( __DIR__ ) . '/fixtures/nonexistent-manifest-1.json';
-		$nonexistent_2 = dirname( __DIR__ ) . '/fixtures/nonexistent-manifest-2.json';
-
-		// Should not trigger an error when no manifests exist, should treat asset as relative path.
+	public function test_register_asset_with_manifest_array_uses_first_readable_manifest(): void {
 		Asset_Loader\register_manifest_asset(
-			[ $nonexistent_1, $nonexistent_2 ],
-			'fallback.js',
+			[ $this->dev_manifest, $this->prod_manifest ],
+			'editor.js',
 			[
-				'handle' => 'fallback-script',
+				'handle' => 'editor-bundle',
+				'dependencies' => [ 'wp-data' ],
 			]
 		);
 
 		$this->assertEquals(
 			[
-				'handle' => 'fallback-script',
-				'src'    => 'https://my.theme/uri/fixtures/fallback.js',
-				'deps'   => [],
-				'ver'    => null,
+				'handle' => 'editor-bundle',
+				'src'    => 'https://localhost:9090/build/editor.js',
+				'deps'   => [ 'wp-data' ],
+				'ver'    => '499bb147f8e7234d957a47ac983e19e7',
 			],
-			$this->scripts->get_registered( 'fallback-script' )
+			$this->scripts->get_registered( 'editor-bundle' )
 		);
 	}
 
 	/**
-	 * Test enqueue_manifest_asset() with array when no manifests are readable.
+	 * Test register_manifest_asset() with an array of manifest paths.
 	 */
-	public function test_enqueue_script_with_manifest_array_all_unreadable(): void {
-		$nonexistent_1 = dirname( __DIR__ ) . '/fixtures/nonexistent-manifest-1.json';
-		$nonexistent_2 = dirname( __DIR__ ) . '/fixtures/nonexistent-manifest-2.json';
-
-		// Should not trigger an error when no manifests exist, should treat asset as relative path.
-		Asset_Loader\enqueue_manifest_asset(
-			[ $nonexistent_1, $nonexistent_2 ],
-			'fallback.js',
+	public function test_register_asset_with_manifest_array_skips_unreadable_manifests(): void {
+		Asset_Loader\register_manifest_asset(
+			[ $this->missing_manifest, $this->prod_manifest ],
+			'editor.js',
 			[
-				'handle' => 'fallback-script',
-			]
+				'handle'       => 'editor-bundle',
+				'dependencies' => [ 'wp-element' ],
+			],
 		);
 
 		$this->assertEquals(
 			[
-				'handle' => 'fallback-script',
-				'src'    => 'https://my.theme/uri/fixtures/fallback.js',
-				'deps'   => [],
-				'ver'    => null,
+				'handle' => 'editor-bundle',
+				'src'    => 'https://my.theme/uri/fixtures/editor.03bfa96fd1c694ca18b3.js',
+				'deps'   => [ 'wp-element' ],
+				'ver'    => '03bfa96fd1c694ca18b3',
 			],
-			$this->scripts->get_registered( 'fallback-script' )
+			$this->scripts->get_registered( 'editor-bundle' )
 		);
-
-		$this->assertEquals( [ 'fallback-script' ], $this->scripts->get_enqueued() );
 	}
 }

@@ -21,7 +21,7 @@ use Altis;
  */
 function get_active_manifest( array $paths ): ?string {
 	foreach ( $paths as $path ) {
-		if ( is_readable( $path ) ) {
+		if ( is_string( $path ) && is_readable( $path ) ) {
 			return $path;
 		}
 	}
