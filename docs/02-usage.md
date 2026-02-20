@@ -11,7 +11,9 @@ This library is designed to work either with assets generated via [`wp-scripts` 
 
 ### `Asset_Loader\register_manifest_asset()` and `Asset_Loader\enqueue_manifest_asset()`
 
-`Asset_Loader` provides a set of methods for reading in this manifest file and registering a specific resource within it to load within your WordPress website. The primary public interface provided by this plugin is a pair of methods, `Asset_Loader\register_manifest_asset()` and `Asset_Loader\enqueue_manifest_asset()`. To register a manifest asset call one of these methods inside actions like `wp_enqueue_scripts` or `enqueue_block_editor_assets`, in the same manner you would have called the standard WordPress `wp_register_script` or `wp_enqueue_style` functions.
+`Asset_Loader` provides a set of methods for reading in this manifest file and registering a specific resource within it to load within your WordPress website. The primary public interface provided by this plugin is a pair of methods, `Asset_Loader\register_manifest_asset()` and `Asset_Loader\enqueue_manifest_asset()`.
+
+To register a manifest asset call one of these methods inside actions like `wp_enqueue_scripts` or `enqueue_block_editor_assets`, similar to how you use the standard WordPress `wp_register_script` or `wp_enqueue_style` functions.
 
 ```php
 <?php
