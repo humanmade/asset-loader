@@ -9,9 +9,9 @@ permalink: /usage
 
 Asset Loader provides two complementary APIs for loading bundled assets in WordPress:
 
-1. **Script Asset API** (`register_script_asset` / `enqueue_script_asset`) — The primary public interface, designed for scripts built with [`wp-scripts`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/). Use these functions when your build outputs `.asset.php` dependency files alongside each bundle.
+1. **Script Asset API** (`register_script_asset` / `enqueue_script_asset`): The primary public interface, designed for scripts built with [`wp-scripts`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/). Use these functions when your build outputs `.asset.php` dependency files alongside each bundle.
 
-2. **Manifest Asset API** (`register_manifest_asset` / `enqueue_manifest_asset`) — For custom Webpack configurations that output a JSON asset manifest, such as those created with [@humanmade/webpack-helpers](https://github.com/humanmade/webpack-helpers).
+2. **Manifest Asset API** (`register_manifest_asset` / `enqueue_manifest_asset`): For custom Webpack configurations that output a JSON asset manifest, such as those created with [@humanmade/webpack-helpers](https://github.com/humanmade/webpack-helpers).
 
 ## Script Asset API
 
@@ -35,9 +35,9 @@ Asset_Loader\register_script_asset(
 
 **Parameters:**
 
-- **`$handle`** _(string)_ — The handle to register the script under.
-- **`$asset_path`** _(string)_ — The absolute file system path to the built `.js` file. A corresponding `.asset.php` file must exist at the same location (e.g., `build/index.js` → `build/index.asset.php`).
-- **`$additional_deps`** _(string[], optional)_ — Additional script handles to merge into the auto-detected dependency list from the `.asset.php` file.
+- **`$handle`** _(string)_: The handle to register the script under.
+- **`$asset_path`** _(string)_: The absolute file system path to the built `.js` file. A corresponding `.asset.php` file must exist at the same location (e.g., `build/index.js` → `build/index.asset.php`).
+- **`$additional_deps`** _(string[], optional)_: Additional script handles to merge into the auto-detected dependency list from the `.asset.php` file.
 
 ### `Asset_Loader\enqueue_script_asset()`
 
@@ -113,12 +113,12 @@ Asset_Loader\enqueue_manifest_asset(
 
 **Parameters:**
 
-- **`$manifest_path`** _(string|string[])_ — File system path to an `asset-manifest.json` file, or an array of paths (the first readable manifest will be used).
-- **`$target_asset`** _(string)_ — The bundle name to look up in the manifest (e.g. `'editor.js'`).
+- **`$manifest_path`** _(string|string[])_: File system path to an `asset-manifest.json` file, or an array of paths (the first readable manifest will be used).
+- **`$target_asset`** _(string)_: The bundle name to look up in the manifest (e.g. `'editor.js'`).
 - **`$options`** _(array, optional)_:
-  - `handle` _(string)_ — Custom handle for the registered asset. Defaults to `$target_asset`.
-  - `dependencies` _(string[])_ — Script or style dependencies.
-  - `in-footer` _(bool)_ — Whether to load in the footer. Defaults to `true`.
+  - `handle` _(string)_: Custom handle for the registered asset. Defaults to `$target_asset`.
+  - `dependencies` _(string[])_: Script or style dependencies.
+  - `in-footer` _(bool)_: Whether to load in the footer. Defaults to `true`.
 
 ### Example
 
@@ -169,7 +169,7 @@ By default, all enqueues will be added at the end of the page, in the `wp_footer
 
 ## Block Extensions API
 
-Use `register_core_block_extension()` to attach additional scripts and styles to an already-registered block type. This is useful when you need to augment a core or third-party block with your own assets — for example, adding a `viewScript` to `core/paragraph` or an `editorScript` to `core/image` — without registering a new block.
+Use `register_core_block_extension()` to attach additional scripts and styles to an already-registered block type. This is useful when you need to augment a core or third-party block with your own assets (_e.g._ adding a `viewScript` to `core/paragraph` or an `editorScript` to `core/image`) without registering a new block.
 
 Write a standard `block.json` whose `name` field references the block you want to extend, and declare any combination of `editorScript`, `script`, `viewScript`, `editorStyle`, and `style` fields using `file:./` relative paths as you would for a normal block. Then call `register_core_block_extension()` with the path to that file.
 
@@ -185,7 +185,7 @@ Asset_Loader\register_core_block_extension(
 
 **Parameters:**
 
-- **`$block_json_path`** _(string)_ — Absolute file system path to a `block.json` file. The file must contain a `name` field identifying the target block, and one or more asset fields (`editorScript`, `script`, `viewScript`, `editorStyle`, `style`) with `file:./` relative paths.
+- **`$block_json_path`** _(string)_: Absolute file system path to a `block.json` file. The file must contain a `name` field identifying the target block, and one or more asset fields (`editorScript`, `script`, `viewScript`, `editorStyle`, `style`) with `file:./` relative paths.
 
 ### Example
 
@@ -229,5 +229,5 @@ function register_block_extensions() {
 
 WordPress will now automatically enqueue `view.js` and `style.css` whenever a `core/paragraph` block is rendered, without registering a new block type.
 
-This works for any registered block — not just core blocks.
+This interface was designed specifically to easily extend core blocks, but it will work for any registered third-party block.
 

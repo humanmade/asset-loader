@@ -326,7 +326,7 @@ function enqueue_script_asset( string $handle, string $asset_path, array $additi
  * those assets whenever the target block is used, without registering a new
  * block type.
  *
- * Works for any registered block — not just core blocks.
+ * Works for any registered block, not just core blocks.
  *
  * Extensions are applied on `wp_loaded` (after all blocks have been registered).
  * Can be called at any point up through `wp_loaded`.
