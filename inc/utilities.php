@@ -178,3 +178,85 @@ function show_local_frontend_debug_mode_warning(): void {
 	</div>
 	<?php
 }
+
+/**
+ * Map a block.json asset field name to its corresponding WP_Block_Type
+ * handles property.
+ *
+ * @param string $field A block.json asset field (e.g. 'editorScript', 'style').
+ * @return string The WP_Block_Type property name (e.g. 'editor_script_handles').
+ */
+function get_block_handles_property( string $field ): string {
+	$map = [
+		'editorScript' => 'editor_script_handles',
+		'script'       => 'script_handles',
+		'viewScript'   => 'view_script_handles',
+		'editorStyle'  => 'editor_style_handles',
+		'style'        => 'style_handles',
+	];
+	return $map[ $field ] ?? '';
+}
+
+/**
+ * Process registered block extensions by merging their assets into already-
+ * registered block types.
+ *
+ * For each extension, uses WP core's register_block_script_handle() and
+ * register_block_style_handle() to register the extension's assets, then
+ * appends the resulting handles to the target block type's handle arrays.
+ *
+ * @param array $extensions Map of block name => array of extension block.json configs.
+ */
+function apply_block_extensions( array $extensions ): void {
+	$registry = \WP_Block_Type_Registry::get_instance();
+
+	$script_fields = [ 'editorScript', 'script', 'viewScript' ];
+	$style_fields  = [ 'editorStyle', 'style' ];
+
+	foreach ( $extensions as $block_name => $block_extensions ) {
+		$block_type = $registry->get_registered( $block_name );
+		if ( ! $block_type ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			trigger_error(
+				sprintf( 'Block type "%s" is not registered; cannot apply extension.', esc_attr( $block_name ) ),
+				E_USER_WARNING
+			);
+			continue;
+		}
+
+		foreach ( $block_extensions as $extension ) {
+			// Merge script assets.
+			foreach ( $script_fields as $field ) {
+				if ( ! isset( $extension[ $field ] ) ) {
+					continue;
+				}
+				$handles_prop = get_block_handles_property( $field );
+				foreach ( (array) $extension[ $field ] as $index => $script ) {
+					$meta_for_registration           = $extension;
+					$meta_for_registration[ $field ] = $script;
+					// Use a high index to avoid handle collisions with the target block.
+					$handle = register_block_script_handle( $meta_for_registration, $field, $index + 100 );
+					if ( $handle && ! in_array( $handle, $block_type->$handles_prop, true ) ) {
+						$block_type->$handles_prop[] = $handle;
+					}
+				}
+			}
+
+			// Merge style assets.
+			foreach ( $style_fields as $field ) {
+				if ( ! isset( $extension[ $field ] ) ) {
+					continue;
+				}
+				$handles_prop = get_block_handles_property( $field );
+				foreach ( (array) $extension[ $field ] as $index => $style ) {
+					$meta_for_registration           = $extension;
+					$meta_for_registration[ $field ] = $style;
+					$handle = register_block_style_handle( $meta_for_registration, $field, $index + 100 );
+					if ( $handle && ! in_array( $handle, $block_type->$handles_prop, true ) ) {
+						$block_type->$handles_prop[] = $handle;
+					}
+				}
+			}
+		}
+	}
+}

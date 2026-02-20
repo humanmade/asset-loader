@@ -316,3 +316,63 @@ function enqueue_script_asset( string $handle, string $asset_path, array $additi
 	}
 	wp_enqueue_script( $handle );
 }
+
+/**
+ * Register a block.json as an extension of an existing block type.
+ *
+ * Reads a block.json file and merges its declared assets (editorScript, script,
+ * viewScript, editorStyle, style) into the registered block type named in the
+ * extension's `name` field. This causes WordPress to automatically enqueue
+ * those assets whenever the target block is used, without registering a new
+ * block type.
+ *
+ * Works for any registered block — not just core blocks.
+ *
+ * Extensions are applied on `wp_loaded` (after all blocks have been registered).
+ * Can be called at any point up through `wp_loaded`.
+ *
+ * @param string $block_json_path Absolute file system path to a block.json file.
+ */
+function register_core_block_extension( string $block_json_path ): void {
+	static $extensions = [];
+	static $hooked = false;
+
+	if ( ! is_readable( $block_json_path ) ) {
+		if ( wp_get_environment_type() === 'local' ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			trigger_error(
+				sprintf( 'Block extension file not readable: %s', esc_attr( $block_json_path ) ),
+				E_USER_WARNING
+			);
+		}
+		return;
+	}
+
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents,WordPressVIPMinimum.Performance.FetchingRemoteData
+	$block_json_content = file_get_contents( $block_json_path );
+	$block_config = json_decode( $block_json_content, true );
+
+	if ( ! is_array( $block_config ) || empty( $block_config['name'] ) ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+		trigger_error(
+			sprintf( 'Invalid block.json at %s: missing "name" field', esc_attr( $block_json_path ) ),
+			E_USER_WARNING
+		);
+		return;
+	}
+
+	$target_block = $block_config['name'];
+
+	// Set the `file` key so that register_block_script_handle() and
+	// register_block_style_handle() can resolve relative asset paths.
+	$block_config['file'] = wp_normalize_path( realpath( $block_json_path ) );
+
+	$extensions[ $target_block ][] = $block_config;
+
+	if ( ! $hooked ) {
+		$hooked = true;
+		add_action( 'wp_loaded', function () use ( &$extensions ) {
+			Utilities\apply_block_extensions( $extensions );
+		} );
+	}
+}
