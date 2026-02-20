@@ -3,6 +3,7 @@
 ## v1.0.0
 
 - Introduce `wp-scripts`-oriented `register_script_asset()` and `enqueue_script_asset()` functions. [#78](https://github.com/humanmade/asset-loader/pull/78)
+- Introduce `register_core_block_extension()` to extend existing block types with additional scripts and styles via a block.json file entrypoint. [#79](https://github.com/humanmade/asset-loader/pull/79)
 
 ## v0.8.0
 

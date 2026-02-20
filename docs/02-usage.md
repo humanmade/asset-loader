@@ -165,3 +165,69 @@ If a manifest is not present then `Asset_Loader` will attempt to load the specif
 
 By default, all enqueues will be added at the end of the page, in the `wp_footer` action. If you need your script to be enqueued in the document `<head>`, pass the flag `'in-footer' => false,` within the options array.
 
+---
+
+## Block Extensions API
+
+Use `register_core_block_extension()` to attach additional scripts and styles to an already-registered block type. This is useful when you need to augment a core or third-party block with your own assets — for example, adding a `viewScript` to `core/paragraph` or an `editorScript` to `core/image` — without registering a new block.
+
+Write a standard `block.json` whose `name` field references the block you want to extend, and declare any combination of `editorScript`, `script`, `viewScript`, `editorStyle`, and `style` fields using `file:./` relative paths as you would for a normal block. Then call `register_core_block_extension()` with the path to that file.
+
+Extensions are processed on `wp_loaded`, after all blocks have been registered. You can call `register_core_block_extension()` at any point up through `wp_loaded`.
+
+### `Asset_Loader\register_core_block_extension()`
+
+```php
+Asset_Loader\register_core_block_extension(
+    string $block_json_path
+);
+```
+
+**Parameters:**
+
+- **`$block_json_path`** _(string)_ — Absolute file system path to a `block.json` file. The file must contain a `name` field identifying the target block, and one or more asset fields (`editorScript`, `script`, `viewScript`, `editorStyle`, `style`) with `file:./` relative paths.
+
+### Example
+
+Given a build directory containing:
+
+```
+build/blocks/core/paragraph/
+├── block.json
+├── view.js
+├── view.asset.php
+├── style.css
+└── style.asset.php
+```
+
+With `block.json`:
+
+```json
+{
+    "name": "core/paragraph",
+    "viewScript": "file:./view.js",
+    "style": "file:./style.css"
+}
+```
+
+Register the extension:
+
+```php
+<?php
+namespace My_Plugin\Blocks;
+
+use Asset_Loader;
+
+add_action( 'init', __NAMESPACE__ . '\\register_block_extensions' );
+
+function register_block_extensions() {
+    Asset_Loader\register_core_block_extension(
+        plugin_dir_path( __DIR__ ) . 'build/blocks/core/paragraph/block.json'
+    );
+}
+```
+
+WordPress will now automatically enqueue `view.js` and `style.css` whenever a `core/paragraph` block is rendered, without registering a new block type.
+
+This works for any registered block — not just core blocks.
+
