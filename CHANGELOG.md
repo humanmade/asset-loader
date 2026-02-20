@@ -2,7 +2,9 @@
 
 ## v0.8.0
 
-- Deprecate `register_asset` and `enqueue_asset` functions, renamed to `register_manifest_asset` and `enqueue_manifest_asset` respectively.
+- Support passing an array of string manifest paths as the first argument to `register_manifest_asset` and `enqueue_manifest_asset`; the first readable manifest will be used. [#75](https://github.com/humanmade/asset-loader/pull/75)
+- Deprecate `register_asset` and `enqueue_asset` functions, renamed to `register_manifest_asset` and `enqueue_manifest_asset` respectively. [#70](https://github.com/humanmade/asset-loader/pull/70)
+- Automatically register a `runtime.js` chunk if found in manifest to support hot reloading in multi-bundle configurations. [#48](https://github.com/humanmade/asset-loader/pull/48)
 
 ## v0.7.1
 

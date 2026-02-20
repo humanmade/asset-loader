@@ -433,7 +433,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	/**
 	 * Test register_manifest_asset() with an array of manifest paths.
 	 */
-	public function test_register_asset_with_manifest_array_uses_first_readable_manifest(): void {
+	public function test_register_manifest_asset_with_manifest_array_uses_first_readable_manifest(): void {
 		Asset_Loader\register_manifest_asset(
 			[ $this->dev_manifest, $this->prod_manifest ],
 			'editor.js',
@@ -457,7 +457,7 @@ class Test_Asset_Loader extends Asset_Loader_Test_Case {
 	/**
 	 * Test register_manifest_asset() with an array of manifest paths.
 	 */
-	public function test_register_asset_with_manifest_array_skips_unreadable_manifests(): void {
+	public function test_register_manifest_asset_with_manifest_array_skips_unreadable_manifests(): void {
 		Asset_Loader\register_manifest_asset(
 			[ $this->missing_manifest, $this->prod_manifest ],
 			'editor.js',
