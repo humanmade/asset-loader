@@ -365,14 +365,10 @@ function register_block_extension( string $block_json_path ): void {
 	$block_config['file'] = wp_normalize_path( realpath( $block_json_path ) );
 
 	if ( did_action( 'wp_loaded' ) ) {
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-		trigger_error(
-			'register_block_extension() must be called before the wp_loaded hook',
-			E_USER_NOTICE
-		);
-	}
-
-	add_action( 'wp_loaded', function () use ( $target_block, $block_config ) {
 		Utilities\apply_block_extension( $target_block, $block_config );
-	} );
+	} else {
+		add_action( 'wp_loaded', function () use ( $target_block, $block_config ) {
+			Utilities\apply_block_extension( $target_block, $block_config );
+		} );
+	}
 }
