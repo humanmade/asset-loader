@@ -371,6 +371,13 @@ function register_core_block_extension( string $block_json_path ): void {
 
 	if ( ! $hooked ) {
 		$hooked = true;
+		if ( did_action( 'wp_loaded' ) ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+			trigger_error(
+				'register_core_block_extension() must be called before the wp_loaded hook',
+				E_USER_NOTICE
+			);
+		}
 		add_action( 'wp_loaded', function () use ( &$extensions ) {
 			Utilities\apply_block_extensions( $extensions );
 		} );
