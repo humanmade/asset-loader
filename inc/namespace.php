@@ -326,14 +326,14 @@ function enqueue_script_asset( string $handle, string $asset_path, array $additi
  * those assets whenever the target block is used, without registering a new
  * block type.
  *
- * Works for any registered block, not just core blocks.
+ * Works for core blocks or any registered third-party block.
  *
  * Extensions are applied on `wp_loaded` (after all blocks have been registered).
- * Can be called at any point up through `wp_loaded`.
+ * Can be called at any point up through `wp_loaded`, but `init` is recommended.
  *
  * @param string $block_json_path Absolute file system path to a block.json file.
  */
-function register_core_block_extension( string $block_json_path ): void {
+function register_block_extension( string $block_json_path ): void {
 	static $extensions = [];
 	static $hooked = false;
 
@@ -374,7 +374,7 @@ function register_core_block_extension( string $block_json_path ): void {
 		if ( did_action( 'wp_loaded' ) ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			trigger_error(
-				'register_core_block_extension() must be called before the wp_loaded hook',
+				'register_block_extension() must be called before the wp_loaded hook',
 				E_USER_NOTICE
 			);
 		}

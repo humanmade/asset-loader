@@ -83,7 +83,7 @@ function enqueue_block_editor_assets() {
 
 ### Block Extensions API
 
-Use `register_core_block_extension()` to attach additional scripts and styles to an already-registered block type (core or third-party) via a `block.json` file, without registering a new block.
+Use `register_block_extension()` to attach additional scripts and styles to an already-registered block type (core or third-party) via a `block.json` file, without registering a new block.
 
 ```php
 <?php
@@ -93,7 +93,7 @@ add_action( 'init', function() {
     // Extend core/paragraph with a custom viewScript and style.
     // The block.json at this path should have "name": "core/paragraph"
     // and declare assets using file:./relative paths.
-    Asset_Loader\register_core_block_extension(
+    Asset_Loader\register_block_extension(
         plugin_dir_path( __FILE__ ) . 'build/blocks/core/paragraph/block.json'
     );
 } );
