@@ -334,9 +334,6 @@ function enqueue_script_asset( string $handle, string $asset_path, array $additi
  * @param string $block_json_path Absolute file system path to a block.json file.
  */
 function register_block_extension( string $block_json_path ): void {
-	static $extensions = [];
-	static $hooked = false;
-
 	if ( ! is_readable( $block_json_path ) ) {
 		if ( wp_get_environment_type() === 'local' ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
@@ -367,19 +364,15 @@ function register_block_extension( string $block_json_path ): void {
 	// register_block_style_handle() can resolve relative asset paths.
 	$block_config['file'] = wp_normalize_path( realpath( $block_json_path ) );
 
-	$extensions[ $target_block ][] = $block_config;
-
-	if ( ! $hooked ) {
-		$hooked = true;
-		if ( did_action( 'wp_loaded' ) ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			trigger_error(
-				'register_block_extension() must be called before the wp_loaded hook',
-				E_USER_NOTICE
-			);
-		}
-		add_action( 'wp_loaded', function () use ( &$extensions ) {
-			Utilities\apply_block_extensions( $extensions );
-		} );
+	if ( did_action( 'wp_loaded' ) ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+		trigger_error(
+			'register_block_extension() must be called before the wp_loaded hook',
+			E_USER_NOTICE
+		);
 	}
+
+	add_action( 'wp_loaded', function () use ( $target_block, $block_config ) {
+		Utilities\apply_block_extension( $target_block, $block_config );
+	} );
 }
