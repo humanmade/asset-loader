@@ -193,6 +193,7 @@ function get_block_handles_property( string $field ): string {
 		'viewScript'   => 'view_script_handles',
 		'editorStyle'  => 'editor_style_handles',
 		'style'        => 'style_handles',
+		'viewStyle'    => 'view_style_handles',
 	];
 	return $map[ $field ] ?? '';
 }
@@ -211,6 +212,7 @@ function apply_block_extension( string $block_name, array $block_extension ): vo
 	$registry = \WP_Block_Type_Registry::get_instance();
 
 	$block_type = $registry->get_registered( $block_name );
+
 	if ( ! $block_type ) {
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 		trigger_error(
@@ -220,36 +222,27 @@ function apply_block_extension( string $block_name, array $block_extension ): vo
 		return;
 	}
 
-	$script_fields = [ 'editorScript', 'script', 'viewScript' ];
-	$style_fields  = [ 'editorStyle', 'style' ];
+	$asset_fields  = [ 'editorScript', 'script', 'viewScript', 'editorStyle', 'style', 'viewStyle' ];
 
-	// Merge script assets.
-	foreach ( $script_fields as $field ) {
+	foreach ( $asset_fields as $field ) {
 		if ( ! isset( $block_extension[ $field ] ) ) {
 			continue;
 		}
-		$handles_prop = get_block_handles_property( $field );
-		foreach ( (array) $block_extension[ $field ] as $index => $script ) {
-			$meta_for_registration           = $block_extension;
-			$meta_for_registration[ $field ] = $script;
-			// Use a high index to avoid handle collisions with the target block.
-			$handle = register_block_script_handle( $meta_for_registration, $field, $index + 100 );
-			if ( $handle && ! in_array( $handle, $block_type->$handles_prop, true ) ) {
-				$block_type->$handles_prop[] = $handle;
-			}
-		}
-	}
 
-	// Merge style assets.
-	foreach ( $style_fields as $field ) {
-		if ( ! isset( $block_extension[ $field ] ) ) {
-			continue;
-		}
 		$handles_prop = get_block_handles_property( $field );
-		foreach ( (array) $block_extension[ $field ] as $index => $style ) {
+
+		// Scripts and styles use different registries and methods.
+		$type = strpos( strtolower( $field ), 'script' ) !== false ? 'script' : 'style';
+
+		foreach ( (array) $block_extension[ $field ] as $index => $asset ) {
 			$meta_for_registration           = $block_extension;
-			$meta_for_registration[ $field ] = $style;
-			$handle = register_block_style_handle( $meta_for_registration, $field, $index + 100 );
+			$meta_for_registration[ $field ] = $asset;
+
+			// Use a high index to avoid handle collisions with the block's existing assets.
+			$handle = $type === 'script'
+				? register_block_script_handle( $meta_for_registration, $field, $index + 100 )
+				: register_block_style_handle( $meta_for_registration, $field, $index + 100 );
+
 			if ( $handle && ! in_array( $handle, $block_type->$handles_prop, true ) ) {
 				$block_type->$handles_prop[] = $handle;
 			}
