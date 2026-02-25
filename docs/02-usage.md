@@ -231,3 +231,19 @@ WordPress will now automatically enqueue `view.js` and `style.css` whenever a `c
 
 This interface was designed specifically to easily extend core blocks, but it will work for any registered third-party block.
 
+### Skipping enqueue for stub scripts
+
+Some `wp-scripts` builds require a JavaScript entry point to produce a CSS output file, even when there is no meaningful JS to run on the page. In this situation a `block.json` may declare a script field solely to trigger the CSS build, but you don't want that stub JS file to be enqueued at runtime.
+
+Append `?skip_enqueue` to the asset path to opt it out of enqueue processing:
+
+```json
+{
+    "name": "core/paragraph",
+    "editorScript": "file:./index.js?skip_enqueue",
+    "style": "file:./style.css"
+}
+```
+
+When `register_block_extension()` encounters a script or style path containing `?skip_enqueue`, it silently skips that entry instead of registering and enqueuing it. The build tooling still sees a valid entry point, so the CSS file is generated as expected.
+
