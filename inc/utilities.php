@@ -222,7 +222,7 @@ function apply_block_extension( string $block_name, array $block_extension ): vo
 		return;
 	}
 
-	$asset_fields  = [ 'editorScript', 'script', 'viewScript', 'editorStyle', 'style', 'viewStyle' ];
+	$asset_fields = [ 'editorScript', 'script', 'viewScript', 'editorStyle', 'style', 'viewStyle' ];
 
 	foreach ( $asset_fields as $field ) {
 		if ( ! isset( $block_extension[ $field ] ) ) {
