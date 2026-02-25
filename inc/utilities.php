@@ -235,6 +235,12 @@ function apply_block_extension( string $block_name, array $block_extension ): vo
 		$type = strpos( strtolower( $field ), 'script' ) !== false ? 'script' : 'style';
 
 		foreach ( (array) $block_extension[ $field ] as $index => $asset ) {
+			// Allow scripts that only exist to trigger a CSS build to self-exclude
+			// with a query string, "file:./index.js?skip_enqueue"
+			if ( strpos( $asset, '?skip_enqueue' ) > 0 ) {
+				continue;
+			}
+
 			$meta_for_registration           = $block_extension;
 			$meta_for_registration[ $field ] = $asset;
 
