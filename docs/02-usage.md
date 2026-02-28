@@ -7,13 +7,120 @@ permalink: /usage
 
 # Usage
 
-This library is designed to work either with assets generated via [`wp-scripts` build tooling](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/), or in conjunction with a JSON asset manifest file (such as those created with the presets in [@humanmade/webpack-helpers](https://github.com/humanmade/webpack-helpers)). This manifest associates asset bundle names with either URIs pointing to asset bundles on a running DevServer instance, or else local file paths on disk.
+Asset Loader provides two complementary APIs for loading bundled assets in WordPress:
+
+1. **Script Asset API** (`register_script_asset` / `enqueue_script_asset`) — The primary public interface, designed for scripts built with [`wp-scripts`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/). Use these functions when your build outputs `.asset.php` dependency files alongside each bundle.
+
+2. **Manifest Asset API** (`register_manifest_asset` / `enqueue_manifest_asset`) — For custom Webpack configurations that output a JSON asset manifest, such as those created with [@humanmade/webpack-helpers](https://github.com/humanmade/webpack-helpers).
+
+## Script Asset API
+
+Use `register_script_asset()` and `enqueue_script_asset()` to load JavaScript bundles built using `wp-scripts build`. These functions automatically detect and read the `.asset.php` file generated alongside each bundle to automatically resolve WordPress script dependencies and set the correct version hash.
+
+This API should be used for any script built with `wp-scripts` that is not already auto-registered by `register_block_type_from_metadata()`. If your scripts are exclusively used as a block's `editorScript`, `viewScript`, etc., WordPress should handle registration for you and you do not need Asset Loader.
+
+For CSS, continue using the standard `wp_register_style` / `wp_enqueue_style` functions directly. `wp-scripts` does not generate an asset file or hash stylesheet filenames in a way that requires a custom helper.
+
+### `Asset_Loader\register_script_asset()`
+
+Register a script without enqueuing it.
+
+```php
+Asset_Loader\register_script_asset(
+    string $handle,
+    string $asset_path,
+    array  $additional_deps = []
+);
+```
+
+**Parameters:**
+
+- **`$handle`** _(string)_ — The handle to register the script under.
+- **`$asset_path`** _(string)_ — The absolute file system path to the built `.js` file. A corresponding `.asset.php` file must exist at the same location (e.g., `build/index.js` → `build/index.asset.php`).
+- **`$additional_deps`** _(string[], optional)_ — Additional script handles to merge into the auto-detected dependency list from the `.asset.php` file.
+
+### `Asset_Loader\enqueue_script_asset()`
+
+Register (if not already registered) and immediately enqueue a script.
+
+```php
+Asset_Loader\enqueue_script_asset(
+    string $handle,
+    string $asset_path,
+    array  $additional_deps = []
+);
+```
+
+Takes the same parameters as `register_script_asset()`.
+
+### Example
+
+```php
+<?php
+namespace My_Plugin\Scripts;
+
+use Asset_Loader;
+
+add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_block_editor_assets' );
+
+/**
+ * Enqueue editor-only scripts.
+ */
+function enqueue_block_editor_assets() {
+    Asset_Loader\enqueue_script_asset(
+        'my-plugin-editor',
+        plugin_dir_path( __DIR__ ) . 'build/editor/index.js'
+    );
+}
+
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\enqueue_frontend_assets' );
+
+/**
+ * Enqueue frontend scripts with additional dependencies.
+ */
+function enqueue_frontend_assets() {
+    Asset_Loader\enqueue_script_asset(
+        'my-plugin-frontend',
+        plugin_dir_path( __DIR__ ) . 'build/frontend/index.js',
+        [ 'some-other-script-handle' ]
+    );
+}
+```
+
+Scripts registered with this API are loaded with `defer` strategy in the footer by default.
+
+### Hot Module Replacement
+
+If your `wp-scripts` build uses the React Fast Refresh runtime (`wp-react-refresh-runtime`), Asset Loader will automatically detect and register the runtime chunk.
+
+Note that `SCRIPT_DEBUG` must be enabled for HMR to function. Asset Loader will display a warning in both the block editor and on the frontend in local environments if it detects an HMR dependency without `SCRIPT_DEBUG`.
+
+---
+
+## Manifest Asset API
+
+For projects using a custom Webpack configuration that outputs a JSON asset manifest (rather than `wp-scripts`), use `register_manifest_asset()` and `enqueue_manifest_asset()`. The manifest associates asset bundle names with either URIs pointing to bundles on a running DevServer instance, or local file paths on disk.
 
 ### `Asset_Loader\register_manifest_asset()` and `Asset_Loader\enqueue_manifest_asset()`
 
-`Asset_Loader` provides a set of methods for reading in this manifest file and registering a specific resource within it to load within your WordPress website. The primary public interface provided by this plugin is a pair of methods, `Asset_Loader\register_manifest_asset()` and `Asset_Loader\enqueue_manifest_asset()`.
+```php
+Asset_Loader\enqueue_manifest_asset(
+    string|string[] $manifest_path,
+    string          $target_asset,
+    array           $options = []
+);
+```
 
-To register a manifest asset call one of these methods inside actions like `wp_enqueue_scripts` or `enqueue_block_editor_assets`, similar to how you use the standard WordPress `wp_register_script` or `wp_enqueue_style` functions.
+**Parameters:**
+
+- **`$manifest_path`** _(string|string[])_ — File system path to an `asset-manifest.json` file, or an array of paths (the first readable manifest will be used).
+- **`$target_asset`** _(string)_ — The bundle name to look up in the manifest (e.g. `'editor.js'`).
+- **`$options`** _(array, optional)_:
+  - `handle` _(string)_ — Custom handle for the registered asset. Defaults to `$target_asset`.
+  - `dependencies` _(string[])_ — Script or style dependencies.
+  - `in-footer` _(bool)_ — Whether to load in the footer. Defaults to `true`.
+
+### Example
 
 ```php
 <?php
@@ -25,8 +132,6 @@ add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_block_edit
 
 /**
  * Enqueue the JS and CSS for blocks in the editor.
- *
- * @return void
  */
 function enqueue_block_editor_assets() {
   Asset_Loader\enqueue_manifest_asset(

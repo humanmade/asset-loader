@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.0
+
+- Introduce `wp-scripts`-oriented `register_script_asset()` and `enqueue_script_asset()` functions. [#78](https://github.com/humanmade/asset-loader/pull/78)
+
 ## v0.8.0
 
 - Support passing an array of string manifest paths as the first argument to `register_manifest_asset` and `enqueue_manifest_asset`; the first readable manifest will be used. [#75](https://github.com/humanmade/asset-loader/pull/75)

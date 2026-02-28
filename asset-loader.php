@@ -38,4 +38,5 @@ const LOADED = true;
 require plugin_dir_path( __FILE__ ) . 'inc/admin.php';
 require plugin_dir_path( __FILE__ ) . 'inc/manifest.php';
 require plugin_dir_path( __FILE__ ) . 'inc/paths.php';
+require plugin_dir_path( __FILE__ ) . 'inc/utilities.php';
 require plugin_dir_path( __FILE__ ) . 'inc/namespace.php';
