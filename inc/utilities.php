@@ -250,7 +250,7 @@ function apply_block_extension( string $block_name, array $block_extension ): vo
 				: register_block_style_handle( $meta_for_registration, $field, $index + 100 );
 
 			if ( $handle && ! in_array( $handle, $block_type->$handles_prop, true ) ) {
-				$block_type->$handles_prop[] = $handle;
+				$block_type->{$handles_prop}[] = $handle;
 			}
 		}
 	}
